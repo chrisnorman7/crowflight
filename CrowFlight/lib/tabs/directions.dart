@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
 
 import '../constants.dart';
 import '../utils.dart';
@@ -12,18 +12,33 @@ class DirectionsTab extends StatefulWidget {
 }
 
 class DirectionsTabState extends State<DirectionsTab> {
+  Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+    const Duration duration = Duration(milliseconds: 250);
+    timer = Timer.periodic(duration, (Timer t) {
+      setState(() => null);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      if (mounted == true) {
-        setState(() => null);
-      }
-    });
+    String directionsString;
+    if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
+      directionsString = 'No directions needed.';
+    } else if (coordinates.distance == null) {
+      directionsString = 'Loading directions...';
+    } else if (coordinates.distance <= coordinates.accuracy) {
+      directionsString = 'Within ${distanceToString(coordinates.accuracy)}.';
+    } else {
+      directionsString = '${distanceToString(coordinates.distance)} at ${coordinates.bearing.toInt()} degrees.';
+    }
     return ListView(
       children: <Widget>[
         Text((coordinates.savedLatitude == null || coordinates.savedLongitude == null) ? 'No coordinates have been saved.' : '${coordinates.savedLatitude.toStringAsFixed(2)},${coordinates.savedLongitude.toStringAsFixed(2)}'),
-        Text((coordinates.savedLatitude == null || coordinates.savedLongitude == null) ? 'No directions needed.' : '${distanceToString(distanceBetween(coordinates.savedLatitude, coordinates.latitude, coordinates.savedLongitude, coordinates.longitude))} at ${bearing(coordinates.latitude, coordinates.savedLatitude, coordinates.longitude, coordinates.savedLongitude).toInt()} degrees.'),
+        Text(directionsString),
         FloatingActionButton(
           onPressed: () {
             coordinates.savedLatitude = coordinates.latitude;

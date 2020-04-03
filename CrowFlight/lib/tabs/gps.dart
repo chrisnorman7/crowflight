@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
@@ -15,7 +16,6 @@ class GpsTabState extends State<GpsTab> {
   double heading;
   double speed;
   double altitude;
-  double accuracy;
   int lastUpdated;
   static String lastUpdatedString = 'Loading...';
   Timer timer;
@@ -23,7 +23,7 @@ class GpsTabState extends State<GpsTab> {
   @override
   void initState() {
     super.initState();
-    const Duration duration = Duration(seconds: timerInterval);
+    const Duration duration = Duration(seconds: lastUpdatedTimerInterval);
     timer = Timer.periodic(duration, (Timer t) {
       if (lastUpdated == null) {
         lastUpdatedString = 'Never';
@@ -57,10 +57,10 @@ class GpsTabState extends State<GpsTab> {
     final Text speedWidget = Text('Speed: $speedString');
     final Text altitudeWidget = Text('Altitude: ${altitude == null ? "Unknown" : distanceToString(altitude)}');
     String accuracyString;
-    if (accuracy == null) {
+    if (coordinates.accuracy == null) {
       accuracyString = 'Unknown';
     } else {
-      accuracyString = 'To within ${distanceToString(accuracy)}';
+      accuracyString = distanceToString(coordinates.accuracy);
     }
     final Text accuracyWidget = Text('Accuracy: $accuracyString');
     final Text lastUpdatedWidget = Text('Last updated: $lastUpdatedString');
@@ -91,8 +91,12 @@ class GpsTabState extends State<GpsTab> {
     heading = currentPosition.heading;
     altitude = currentPosition.altitude;
     speed = currentPosition.speed;
-    accuracy = currentPosition.accuracy;
+    coordinates.accuracy = currentPosition.accuracy;
     lastUpdated = currentPosition.time ~/ 1000;
+    if (coordinates.savedLatitude != null && coordinates.savedLongitude != null) {
+      coordinates.distance = distanceBetween(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
+      coordinates.bearing = bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
+    }
   }
 }
 
