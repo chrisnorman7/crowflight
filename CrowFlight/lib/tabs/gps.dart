@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
@@ -12,10 +13,32 @@ class GpsTab extends StatefulWidget {
 class GpsTabState extends State<GpsTab> {
   static double latitude;
   static double longitude;
-  static double lastUpdated;
   static double speed;
   static double accuracy;
+  static int lastUpdated;
+  static String lastUpdatedString = 'Loading...';
+  Timer timer;
 
+  @override
+  void initState() {
+    super.initState();
+    const Duration duration = Duration(seconds: timerInterval);
+    timer = Timer.periodic(duration, (Timer t) {
+      if (lastUpdated == null) {
+        lastUpdatedString = 'Never';
+      } else {
+        final DateTime now = DateTime.now();
+        final int nowSeconds = now.millisecondsSinceEpoch~/ 1000;
+        if (lastUpdated > nowSeconds) {
+          lastUpdatedString = 'Somehow in the future...';
+        } else {
+          final String plural = nowSeconds == 1 ? 'second' : 'seconds';
+          lastUpdatedString = '${nowSeconds - lastUpdated} $plural ago';
+        }
+      }
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     const Text header = Text('GPS Information');
@@ -37,13 +60,6 @@ class GpsTabState extends State<GpsTab> {
       accuracyString = 'To within ${accuracy.toStringAsFixed(2)} m';
     }
     final Text accuracyWidget = Text('Accuracy: $accuracyString');
-    String lastUpdatedString;
-    if (lastUpdated == null) {
-      lastUpdatedString = 'Not loaded yet';
-    } else {
-      final DateTime lastUpdatedDateTime = DateTime.fromMillisecondsSinceEpoch(lastUpdated.toInt());
-      lastUpdatedString = '${lastUpdatedDateTime.hour}:${lastUpdatedDateTime.minute}:${lastUpdatedDateTime.second} (${lastUpdatedDateTime.year}-${lastUpdatedDateTime.month}-${lastUpdatedDateTime.day})';
-    }
     final Text lastUpdatedWidget = Text('Last updated: $lastUpdatedString');
     final List<Widget> rows = <Widget>[
       header,
@@ -65,7 +81,7 @@ class GpsTabState extends State<GpsTab> {
     latitude = currentPosition.latitude;
     longitude = currentPosition.longitude;
     speed = currentPosition.speed;
-    lastUpdated = currentPosition.time;
+    lastUpdated = currentPosition.time ~/ 1000;
   }
 }
 
