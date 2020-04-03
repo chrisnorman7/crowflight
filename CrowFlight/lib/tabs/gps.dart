@@ -14,6 +14,7 @@ class GpsTabState extends State<GpsTab> {
   static double longitude;
   static double lastUpdated;
   static double speed;
+  static double accuracy;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,13 @@ class GpsTabState extends State<GpsTab> {
       speedString = '${kilometresPerHour.toStringAsFixed(2)} km/h';
     }
     final Text speedWidget = Text('Speed: $speedString');
+    String accuracyString;
+    if (accuracy == null) {
+      accuracyString = 'Unknown';
+    } else {
+      accuracyString = 'To within ${accuracy.toStringAsFixed(2)} m';
+    }
+    final Text accuracyWidget = Text('Accuracy: $accuracyString');
     String lastUpdatedString;
     if (lastUpdated == null) {
       lastUpdatedString = 'Not loaded yet';
@@ -42,6 +50,7 @@ class GpsTabState extends State<GpsTab> {
       latitudeWidget,
       longitudeWidget,
       speedWidget,
+      accuracyWidget,
       lastUpdatedWidget
     ];
     location.onLocationChanged.listen((LocationData currentLocation) {
