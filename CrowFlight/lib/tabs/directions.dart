@@ -25,6 +25,12 @@ class DirectionsTabState extends State<DirectionsTab> {
 
   @override
   Widget build(BuildContext context) {
+    String savedCoordinatesString;
+    if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
+      savedCoordinatesString = 'No coordinates have been saved yet.';
+    } else {
+      savedCoordinatesString = '${coordinates.savedLatitude},${coordinates.savedLongitude}';
+    }
     String directionsString;
     if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
       directionsString = 'No directions needed.';
@@ -37,7 +43,7 @@ class DirectionsTabState extends State<DirectionsTab> {
     }
     return ListView(
       children: <Widget>[
-        Text((coordinates.savedLatitude == null || coordinates.savedLongitude == null) ? 'No coordinates have been saved.' : '${coordinates.savedLatitude.toStringAsFixed(2)},${coordinates.savedLongitude.toStringAsFixed(2)}'),
+        Text(savedCoordinatesString),
         Text(directionsString),
         FloatingActionButton(
           onPressed: () {
