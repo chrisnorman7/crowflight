@@ -27,15 +27,19 @@ class GpsTabState extends State<GpsTab> {
       lastUpdatedString = '${lastUpdatedDateTime.hour}:${lastUpdatedDateTime.minute}:${lastUpdatedDateTime.second} (${lastUpdatedDateTime.year}-${lastUpdatedDateTime.month}-${lastUpdatedDateTime.day})';
     }
     final Text lastUpdatedWidget = Text('Last updated: $lastUpdatedString');
-    final List<Widget> columns = <Widget>[header, latitudeWidget, longitudeWidget, lastUpdatedWidget];
+    final List<Widget> rows = <Widget>[
+      header,
+      latitudeWidget,
+      longitudeWidget,
+      lastUpdatedWidget
+    ];
     location.onLocationChanged.listen((LocationData currentLocation) {
       setState(() => updatePosition(currentLocation));
     });
-    return Column(
-      children: columns
+    return ListView(
+      children: rows
     );
   }
-  
   void updatePosition(LocationData currentPosition) {
     latitude = currentPosition.latitude;
     longitude = currentPosition.longitude;
