@@ -81,8 +81,14 @@ class GpsTabState extends State<GpsTab> {
       }
     });
     return ListView.builder(
-      itemCount: rows.length,
-      itemBuilder: (BuildContext context, int index) => rows[index]
+      itemCount: rows.length * 2,
+      itemBuilder: (BuildContext context, int index) {
+        if (index.isOdd) {
+          return const Divider(height: 65);
+        } else {
+          return rows[index ~/ 2];
+        }
+      }
     );
   }
   void updatePosition(LocationData currentPosition) {
