@@ -10,6 +10,8 @@ const int timerInterval = 5;
 class Coordinates {
   double latitude;
   double longitude;
+  double savedLatitude;
+  double savedLongitude;
 }
 
 final Coordinates coordinates = Coordinates();

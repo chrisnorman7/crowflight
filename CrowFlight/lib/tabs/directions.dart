@@ -11,15 +11,21 @@ class DirectionsTab extends StatefulWidget {
 }
 
 class DirectionsTabState extends State<DirectionsTab> {
-  static double savedLatitude;
-  static double savedLongitude;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        Text((savedLatitude == null || savedLongitude == null) ? 'No coordinates have been saved.' : '${savedLatitude.toStringAsFixed(2)},${savedLongitude.toStringAsFixed(2)}'),
-        Text((savedLatitude == null || savedLongitude == null) ? 'No directions needed.' : '${distanceToString(distanceBetween(coordinates.latitude, savedLatitude, coordinates.longitude, savedLongitude))} at ${bearing(coordinates.latitude, savedLatitude, coordinates.longitude, savedLongitude)} degrees.')
+        Text((coordinates.savedLatitude == null || coordinates.savedLongitude == null) ? 'No coordinates have been saved.' : '${coordinates.savedLatitude.toStringAsFixed(2)},${coordinates.savedLongitude.toStringAsFixed(2)}'),
+        Text((coordinates.savedLatitude == null || coordinates.savedLongitude == null) ? 'No directions needed.' : '${distanceToString(distanceBetween(coordinates.latitude, coordinates.savedLatitude, coordinates.longitude, coordinates.savedLongitude))} at ${bearing(coordinates.latitude, coordinates.savedLatitude, coordinates.longitude, coordinates.savedLongitude)} degrees.'),
+        FloatingActionButton(
+          onPressed: () {
+            coordinates.savedLatitude = coordinates.latitude;
+            coordinates.savedLongitude = coordinates.longitude;
+          },
+          tooltip: 'Save Current Coordinates',
+          child: Icon(Icons.add),
+        )
       ]
     );
   }
