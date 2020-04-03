@@ -27,7 +27,7 @@ class DirectionsTabState extends State<DirectionsTab> {
               return;
             }
             final int now = DateTime.now().millisecondsSinceEpoch;
-            if ((now - lastVibrationTime) >= (coordinates.distance * distanceMultiplier)) {
+            if ((now - lastVibrationTime) >= (coordinates.distance * distanceMultiplier) && vibrationEnabled == true) {
                 lastVibrationTime = now;
                 Vibration.vibrate(duration: movingVibrationDuration);
             }
@@ -50,7 +50,9 @@ class DirectionsTabState extends State<DirectionsTab> {
     } else if (coordinates.distance == null) {
       directionsString = 'Loading directions...';
     } else if (coordinates.distance <= coordinates.accuracy) {
-      Vibration.vibrate(duration: arrivedVibrationDuration);
+      if (vibrationEnabled == true) {
+        Vibration.vibrate(duration: arrivedVibrationDuration);
+      }
       directionsString = 'Within ${distanceToString(coordinates.accuracy)}.';
     } else {
       directionsString = '${distanceToString(coordinates.distance)} at ${coordinates.bearing.toInt()} degrees.';

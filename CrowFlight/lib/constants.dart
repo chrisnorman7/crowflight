@@ -9,6 +9,7 @@ const int lastUpdatedTimerInterval = 1; // Given in seconds.
 const int directionsTimerInterval = 200; // In milliseconds.
 
 // All vibration durations given in milliseconds.
+bool vibrationEnabled = true;
 const int arrivedVibrationDuration = 10;
 const int movingVibrationDuration = 50;
 const int distanceMultiplier = 100;
