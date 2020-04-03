@@ -12,13 +12,11 @@ class GpsTab extends StatefulWidget {
 }
 
 class GpsTabState extends State<GpsTab> {
-  static double latitude;
-  static double longitude;
-  static double heading;
-  static double speed;
-  static double altitude;
-  static double accuracy;
-  static int lastUpdated;
+  double heading;
+  double speed;
+  double altitude;
+  double accuracy;
+  int lastUpdated;
   static String lastUpdatedString = 'Loading...';
   Timer timer;
 
@@ -42,12 +40,12 @@ class GpsTabState extends State<GpsTab> {
       }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     const Text header = Text('GPS Information');
-    final Text latitudeWidget = Text('Latitude: ${latitude == null ? loadingString : latitude.toStringAsFixed(2)}');
-    final Text longitudeWidget = Text('Longitude: ${longitude == null ? loadingString : longitude.toStringAsFixed(2)}');
+    final Text latitudeWidget = Text('Latitude: ${coordinates.latitude == null ? loadingString : coordinates.latitude.toStringAsFixed(2)}');
+    final Text longitudeWidget = Text('Longitude: ${coordinates.longitude == null ? loadingString : coordinates.longitude.toStringAsFixed(2)}');
     String speedString;
     if (speed == null) {
       speedString = loadingString;
@@ -76,7 +74,11 @@ class GpsTabState extends State<GpsTab> {
       lastUpdatedWidget
     ];
     location.onLocationChanged.listen((LocationData currentLocation) {
-      setState(() => updatePosition(currentLocation));
+      if (mounted == true) {
+        setState(() => updatePosition(currentLocation));
+      } else {
+        updatePosition(currentLocation);
+      }
     });
     return ListView.builder(
       itemCount: rows.length,
@@ -84,8 +86,8 @@ class GpsTabState extends State<GpsTab> {
     );
   }
   void updatePosition(LocationData currentPosition) {
-    latitude = currentPosition.latitude;
-    longitude = currentPosition.longitude;
+    coordinates.latitude = currentPosition.latitude;
+    coordinates.longitude = currentPosition.longitude;
     heading = currentPosition.heading;
     altitude = currentPosition.altitude;
     speed = currentPosition.speed;

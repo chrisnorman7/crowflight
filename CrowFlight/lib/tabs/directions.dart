@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../constants.dart';
+import '../utils.dart';
+
 import 'base.dart';
 
 class DirectionsTab extends StatefulWidget {
@@ -7,10 +11,17 @@ class DirectionsTab extends StatefulWidget {
 }
 
 class DirectionsTabState extends State<DirectionsTab> {
+  static double savedLatitude;
+  static double savedLongitude;
+
   @override
   Widget build(BuildContext context) {
-    const Center center = Center(child: Text('Directions will appear here.'));
-    return center;
+    return ListView(
+      children: <Widget>[
+        Text((savedLatitude == null || savedLongitude == null) ? 'No coordinates have been saved.' : '${savedLatitude.toStringAsFixed(2)},${savedLongitude.toStringAsFixed(2)}'),
+        Text((savedLatitude == null || savedLongitude == null) ? 'No directions needed.' : '${distanceToString(distanceBetween(coordinates.latitude, savedLatitude, coordinates.longitude, savedLongitude))} at ${bearing(coordinates.latitude, savedLatitude, coordinates.longitude, savedLongitude)} degrees.')
+      ]
+    );
   }
 }
 
