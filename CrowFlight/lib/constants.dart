@@ -8,6 +8,9 @@ final Location location = Location();
 const int lastUpdatedTimerInterval = 1; // Given in seconds.
 const int directionsTimerInterval = 200; // In milliseconds.
 
+// All vibration durations given in milliseconds.
+const int arrivedVibrationDuration = 10;
+
 class Coordinates {
   double latitude;
   double longitude;
