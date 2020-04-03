@@ -14,6 +14,7 @@ class GpsTab extends StatefulWidget {
 class GpsTabState extends State<GpsTab> {
   static double latitude;
   static double longitude;
+  static double heading;
   static double speed;
   static double altitude;
   static double accuracy;
@@ -34,8 +35,9 @@ class GpsTabState extends State<GpsTab> {
         if (lastUpdated > nowSeconds) {
           lastUpdatedString = 'Somehow in the future...';
         } else {
-          final String plural = nowSeconds == 1 ? 'second' : 'seconds';
-          lastUpdatedString = '${nowSeconds - lastUpdated} $plural ago';
+          final int seconds = nowSeconds - lastUpdated;
+          final String plural = seconds == 1 ? 'second' : 'seconds';
+          lastUpdatedString = '$seconds $plural ago';
         }
       }
     });
@@ -60,7 +62,7 @@ class GpsTabState extends State<GpsTab> {
     if (accuracy == null) {
       accuracyString = 'Unknown';
     } else {
-      accuracyString = 'To within ${accuracy.toStringAsFixed(2)} m';
+      accuracyString = 'To within ${distanceToString(accuracy)}';
     }
     final Text accuracyWidget = Text('Accuracy: $accuracyString');
     final Text lastUpdatedWidget = Text('Last updated: $lastUpdatedString');
@@ -84,7 +86,10 @@ class GpsTabState extends State<GpsTab> {
   void updatePosition(LocationData currentPosition) {
     latitude = currentPosition.latitude;
     longitude = currentPosition.longitude;
+    heading = currentPosition.heading;
+    altitude = currentPosition.altitude;
     speed = currentPosition.speed;
+    accuracy = currentPosition.accuracy;
     lastUpdated = currentPosition.time ~/ 1000;
   }
 }
