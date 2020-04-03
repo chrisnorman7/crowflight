@@ -13,12 +13,22 @@ class GpsTabState extends State<GpsTab> {
   static double latitude;
   static double longitude;
   static double lastUpdated;
+  static double speed;
 
   @override
   Widget build(BuildContext context) {
     const Text header = Text('GPS Information');
-    final Text latitudeWidget = Text('Latitude: ${latitude == null ? "Loading..." : latitude.toStringAsFixed(2)}');
-    final Text longitudeWidget = Text('Longitude: ${longitude == null ? "Loading..." : longitude.toStringAsFixed(2)}');
+    final Text latitudeWidget = Text('Latitude: ${latitude == null ? loadingString : latitude.toStringAsFixed(2)}');
+    final Text longitudeWidget = Text('Longitude: ${longitude == null ? loadingString : longitude.toStringAsFixed(2)}');
+    String speedString;
+    if (speed == null) {
+      speedString = loadingString;
+    } else {
+      final double metresPerHour = speed * secondsPerHour;
+      final double kilometresPerHour = metresPerHour / metresPerKilometre;
+      speedString = '${kilometresPerHour.toStringAsFixed(2)} km/h';
+    }
+    final Text speedWidget = Text('Speed: $speedString');
     String lastUpdatedString;
     if (lastUpdated == null) {
       lastUpdatedString = 'Not loaded yet';
@@ -31,18 +41,21 @@ class GpsTabState extends State<GpsTab> {
       header,
       latitudeWidget,
       longitudeWidget,
+      speedWidget,
       lastUpdatedWidget
     ];
     location.onLocationChanged.listen((LocationData currentLocation) {
       setState(() => updatePosition(currentLocation));
     });
-    return ListView(
-      children: rows
+    return ListView.builder(
+      itemCount: rows.length,
+      itemBuilder: (BuildContext context, int index) => rows[index]
     );
   }
   void updatePosition(LocationData currentPosition) {
     latitude = currentPosition.latitude;
     longitude = currentPosition.longitude;
+    speed = currentPosition.speed;
     lastUpdated = currentPosition.time;
   }
 }
