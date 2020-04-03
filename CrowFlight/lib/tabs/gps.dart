@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 
 import '../constants.dart';
+import '../utils.dart';
 import 'base.dart';
 
 class GpsTab extends StatefulWidget {
@@ -14,6 +15,7 @@ class GpsTabState extends State<GpsTab> {
   static double latitude;
   static double longitude;
   static double speed;
+  static double altitude;
   static double accuracy;
   static int lastUpdated;
   static String lastUpdatedString = 'Loading...';
@@ -53,6 +55,7 @@ class GpsTabState extends State<GpsTab> {
       speedString = '${kilometresPerHour.toStringAsFixed(2)} km/h';
     }
     final Text speedWidget = Text('Speed: $speedString');
+    final Text altitudeWidget = Text('Altitude: ${altitude == null ? "Unknown" : distanceToString(altitude)}');
     String accuracyString;
     if (accuracy == null) {
       accuracyString = 'Unknown';
@@ -66,6 +69,7 @@ class GpsTabState extends State<GpsTab> {
       latitudeWidget,
       longitudeWidget,
       speedWidget,
+      altitudeWidget,
       accuracyWidget,
       lastUpdatedWidget
     ];
