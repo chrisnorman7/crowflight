@@ -28,7 +28,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  static final List<CrowFlightTab> tabs = <CrowFlightTab>[
+  final List<CrowFlightTab> tabs = <CrowFlightTab>[
     gps,
     directions,
     savedPlaces,
