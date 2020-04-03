@@ -14,6 +14,7 @@ class DirectionsTab extends StatefulWidget {
 
 class DirectionsTabState extends State<DirectionsTab> {
   Timer timer;
+  int lastVibrationTime = 0;
 
   @override
   void initState() {
@@ -21,7 +22,16 @@ class DirectionsTabState extends State<DirectionsTab> {
     const Duration duration = Duration(milliseconds: 250);
     timer = Timer.periodic(duration, (Timer t) {
       if (mounted == true) {
-        setState(() => null);
+        setState(() {
+            if (coordinates.distance == null) {
+              return;
+            }
+            final int now = DateTime.now().millisecondsSinceEpoch;
+            if ((now - lastVibrationTime) >= (coordinates.distance * distanceMultiplier)) {
+                lastVibrationTime = now;
+                Vibration.vibrate(duration: movingVibrationDuration);
+            }
+        });
       }
     });
   }
@@ -46,6 +56,17 @@ class DirectionsTabState extends State<DirectionsTab> {
       directionsString = '${distanceToString(coordinates.distance)} at ${coordinates.bearing.toInt()} degrees.';
     }
     final List<Widget> rows = <Widget>[
+      RaisedButton(
+        child: const Text('Clear Saved Coordinates'),
+        onPressed: () {
+          coordinates.savedLatitude = null;
+          coordinates.savedLongitude = null;
+          coordinates.distance = null;
+          coordinates.bearing = null;
+        }
+      ),
+      Text(savedCoordinatesString),
+      Text(directionsString),
       FloatingActionButton(
         onPressed: () {
           coordinates.savedLatitude = coordinates.latitude;
@@ -54,15 +75,6 @@ class DirectionsTabState extends State<DirectionsTab> {
         tooltip: 'Save Current Coordinates',
         child: Icon(Icons.add),
       ),
-      Text(savedCoordinatesString),
-      Text(directionsString),
-      RaisedButton(
-        child: const Text('Clear Saved Coordinates'),
-        onPressed: () {
-          coordinates.savedLatitude = null;
-          coordinates.savedLongitude = null;
-        }
-      )
     ];
     return ListView.builder(
       itemCount: rows.length * 2,

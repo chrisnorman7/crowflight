@@ -10,6 +10,9 @@ const int directionsTimerInterval = 200; // In milliseconds.
 
 // All vibration durations given in milliseconds.
 const int arrivedVibrationDuration = 10;
+const int movingVibrationDuration = 50;
+const int distanceMultiplier = 100;
+const int vibrateInterval = 50;
 
 class Coordinates {
   double latitude;
