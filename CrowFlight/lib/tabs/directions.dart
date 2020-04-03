@@ -22,16 +22,9 @@ class DirectionsTabState extends State<DirectionsTab> {
     const Duration duration = Duration(milliseconds: 250);
     timer = Timer.periodic(duration, (Timer t) {
       if (mounted == true) {
-        setState(() {
-            if (coordinates.distance == null) {
-              return;
-            }
-            final int now = DateTime.now().millisecondsSinceEpoch;
-            if ((now - lastVibrationTime) >= (coordinates.distance * distanceMultiplier) && vibrationEnabled == true) {
-                lastVibrationTime = now;
-                Vibration.vibrate(duration: movingVibrationDuration);
-            }
-        });
+        setState(() => vibrate());
+      } else {
+        vibrate();
       }
     });
   }
@@ -88,6 +81,17 @@ class DirectionsTabState extends State<DirectionsTab> {
         }
       }
     );
+  }
+  
+  void vibrate() {
+    if (coordinates.distance == null) {
+      return;
+    }
+    final int now = DateTime.now().millisecondsSinceEpoch;
+    if ((now - lastVibrationTime) >= (coordinates.distance * distanceMultiplier) && vibrationEnabled == true) {
+        lastVibrationTime = now;
+        Vibration.vibrate(duration: movingVibrationDuration);
+    }
   }
 }
 
