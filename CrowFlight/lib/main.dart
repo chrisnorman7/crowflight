@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants.dart';
 import 'get_location.dart';
+import 'saved_place.dart';
 
 import 'tabs/base.dart';
 import 'tabs/directions.dart';
@@ -12,6 +17,21 @@ import 'tabs/settings.dart';
 
 Future<void> main() async {
   runApp(CheckLocationPermissionsWidget());
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  vibrationEnabled = prefs.getBool(vibrationEnabledPreferenceName) ?? vibrationEnabled;
+  final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
+  if (savedPlacesJson != null) {
+    final dynamic mapList = jsonDecode(savedPlacesJson);
+    mapList.forEach((dynamic element) {
+      savedPlacesList.add(
+        SavedPlace(
+          title: element['title'], // ignore: argument_type_not_assignable
+          latitude: element['latitude'], // ignore: argument_type_not_assignable
+          longitude: element['longitude'] // ignore: argument_type_not_assignable
+        )
+      );
+    });
+  }
   bool serviceEnabled = await location.serviceEnabled();
   if (!serviceEnabled) {
     serviceEnabled = await location.requestService();

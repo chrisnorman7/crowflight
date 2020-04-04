@@ -82,9 +82,9 @@ class AddSavedPlaceWidgetState extends State<AddSavedPlaceWidget> {
               onPressed: () {
                 if (_formKey.currentState.validate() == true) {
                   final SavedPlace place = SavedPlace(
-                    double.parse(_latitudeController.text),
-                    double.parse(_longitudeController.text),
-                    _titleController.text
+                    latitude: double.parse(_latitudeController.text),
+                    longitude: double.parse(_longitudeController.text),
+                    title: _titleController.text
                   );
                   savedPlacesList.add(place);
                   updateSavedPlaces();

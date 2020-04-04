@@ -47,8 +47,8 @@ class GpsTabState extends State<GpsTab> {
     if (speed == null) {
       speedString = loadingString;
     } else {
-      final double metresPerHour = speed * secondsPerHour;
-      final double kilometresPerHour = metresPerHour / metresPerKilometre;
+      final double metresPerHour = speed * 3600;
+      final double kilometresPerHour = metresPerHour / 1000;
       speedString = '${kilometresPerHour.toStringAsFixed(2)} km/h';
     }
     String accuracyString;

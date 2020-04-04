@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
+import '../utils.dart';
+
 import 'base.dart';
 
 class SettingsTab extends StatefulWidget {
@@ -16,7 +18,10 @@ class SettingsTabState extends State<SettingsTab> {
         title: const Text('Enable Vibration'),
         value: vibrationEnabled,
         onChanged: (bool value) {
-          setState(() => vibrationEnabled = value);
+          setState(() {
+            vibrationEnabled = value;
+            savePreferenceBool(vibrationEnabledPreferenceName, vibrationEnabled);
+          });
         }
       )
     ];

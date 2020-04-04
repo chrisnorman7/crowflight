@@ -21,7 +21,9 @@ class SavedPlacesTabState extends State<SavedPlacesTab> {
   void initState() {
     super.initState();
     _listener = savedPlacesStreamController.stream.listen((List<SavedPlace> savedPlaces) {
-      setState(() => null);
+      setState(() {
+        saveSavedPlaces();
+      });
     });
   }
 

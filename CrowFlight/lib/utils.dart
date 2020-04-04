@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
+import 'saved_place.dart';
 
 String distanceToString(num metres) {
   if (metres > 1000) {
@@ -58,4 +62,17 @@ String headingToString(double angle) {
   const List<String> directions = <String>['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
   final int index = (((angle %= 360) < 0 ? angle + 360 : angle) / 45 % 8).round();
   return '${angle.toStringAsFixed(0)} degrees ${directions[index]}';
+}
+
+Future<void> savePreferenceBool(String name, bool value) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool(name, value);
+}
+
+Future<void> saveSavedPlaces() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final List<Map<String,dynamic>> json = savedPlacesList.map((SavedPlace place) {
+    return place.toJson();
+  }).toList();
+  prefs.setString(savedPlacesListPreferenceName, jsonEncode(json));
 }
