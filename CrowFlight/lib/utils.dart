@@ -53,3 +53,9 @@ void updateSavedPlaces() {
     savedPlacesStreamController.add(savedPlacesList);
   }
 }
+
+String headingToString(double angle) {
+  const List<String> directions = <String>['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
+  final int index = (((angle %= 360) < 0 ? angle + 360 : angle) / 45 % 8).round();
+  return '${angle.toStringAsFixed(0)} degrees ${directions[index]}';
+}

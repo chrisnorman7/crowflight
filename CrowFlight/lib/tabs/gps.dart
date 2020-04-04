@@ -43,9 +43,6 @@ class GpsTabState extends State<GpsTab> {
 
   @override
   Widget build(BuildContext context) {
-    const Text header = Text('GPS Information');
-    final Text latitudeWidget = Text('Latitude: ${coordinates.latitude == null ? loadingString : coordinates.latitude.toStringAsFixed(2)}');
-    final Text longitudeWidget = Text('Longitude: ${coordinates.longitude == null ? loadingString : coordinates.longitude.toStringAsFixed(2)}');
     String speedString;
     if (speed == null) {
       speedString = loadingString;
@@ -54,24 +51,24 @@ class GpsTabState extends State<GpsTab> {
       final double kilometresPerHour = metresPerHour / metresPerKilometre;
       speedString = '${kilometresPerHour.toStringAsFixed(2)} km/h';
     }
-    final Text speedWidget = Text('Speed: $speedString');
-    final Text altitudeWidget = Text('Altitude: ${altitude == null ? "Unknown" : distanceToString(altitude)}');
     String accuracyString;
     if (coordinates.accuracy == null) {
       accuracyString = 'Unknown';
     } else {
       accuracyString = distanceToString(coordinates.accuracy);
     }
-    final Text accuracyWidget = Text('Accuracy: $accuracyString');
-    final Text lastUpdatedWidget = Text('Last updated: $lastUpdatedString');
     final List<Widget> rows = <Widget>[
-      header,
-      latitudeWidget,
-      longitudeWidget,
-      speedWidget,
-      altitudeWidget,
-      accuracyWidget,
-      lastUpdatedWidget
+      const Text('GPS Information'),
+      Text('Latitude: ${coordinates.latitude == null ? loadingString : coordinates.latitude.toStringAsFixed(2)}'),
+      Text('Longitude: ${coordinates.longitude == null ? loadingString : coordinates.longitude.toStringAsFixed(2)}'),
+      Semantics(
+        child: Text('Heading: ${heading == null ? "Unknown" : headingToString(heading)}'),
+        liveRegion: true
+      ),
+      Text('Speed: $speedString'),
+      Text('Altitude: ${altitude == null ? "Unknown" : distanceToString(altitude)}'),
+      Text('Accuracy: $accuracyString'),
+      Text('Last updated: $lastUpdatedString')
     ];
     location.onLocationChanged.listen((LocationData currentLocation) {
       if (mounted == true) {
