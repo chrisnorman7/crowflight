@@ -23,6 +23,27 @@ class SettingsTabState extends State<SettingsTab> {
             savePreferenceBool(vibrationEnabledPreferenceName, vibrationEnabled);
           });
         }
+      ),
+      Semantics(
+        child: DropdownButton<int>(
+          hint: const Text('Compass Style'),
+          value: compassStyle,
+          items: CompassStyles.values.map((CompassStyles item) {
+            final int index = item.index;
+            return DropdownMenuItem<int>(
+              child: Text(compassStyleNames[index]),
+              value: index
+            );
+          }).toList(),
+          onChanged: (int value) {
+            setState(() {
+              compassStyle = value;
+              savePreferenceInt(compassStylePreferenceName, compassStyle);
+            });
+          }
+        ),
+        label: 'Compass Style',
+        value: compassStyleNames[compassStyle]
       )
     ];
     return ListView.builder(
