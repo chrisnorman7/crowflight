@@ -16,6 +16,8 @@ const int arrivedVibrationDuration = 10;
 const int movingVibrationDuration = 50;
 const int distanceMultiplier = 100;
 const int vibrateInterval = 50;
+const String compassStylePreferenceName = 'compassStyle';
+int compassStyle = 0;
 
 class Coordinates {
   double latitude;
@@ -25,6 +27,7 @@ class Coordinates {
   double distance;
   double accuracy;
   double heading;
+  double headingToTarget;
   String targetName;
 }
 
@@ -34,3 +37,13 @@ const String savedPlacesListPreferenceName = 'savedPlaces';
 List<SavedPlace> savedPlacesList = <SavedPlace>[];
 
 final StreamController<List<SavedPlace>> savedPlacesStreamController = StreamController<List<SavedPlace>>.broadcast();
+
+const List<String> compassStyleNames = <String>[
+  'Absolute',
+  'Relative'
+];
+
+enum CompassStyles {
+  absolute,
+  relative
+}

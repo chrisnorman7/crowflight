@@ -32,6 +32,10 @@ double bearing(double lat1, double lon1, double lat2, double lon2){
   return (brng + 360) % 360;
 }
 
+double relativeBearing(double facing, double needToFace) {
+  return (needToFace - facing) % 360;
+}
+
 double distanceBetween(double lat1, double lon1, double lat2, double lon2) {
   const double R = 6371e3; // metres
   final double fi1 = degreesToRadians(lat1);
@@ -67,6 +71,16 @@ String headingToString(double angle) {
 Future<void> savePreferenceBool(String name, bool value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setBool(name, value);
+}
+
+Future<void> savePreferenceString(String name, String value) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString(name, value);
+}
+
+Future<void> savePreferenceInt(String name, int value) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setInt(name, value);
 }
 
 Future<void> saveSavedPlaces() async {

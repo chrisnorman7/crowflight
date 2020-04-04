@@ -13,7 +13,6 @@ class GpsTab extends StatefulWidget {
 }
 
 class GpsTabState extends State<GpsTab> {
-  double heading;
   double speed;
   double altitude;
   int lastUpdated;
@@ -62,7 +61,7 @@ class GpsTabState extends State<GpsTab> {
       Text('Latitude: ${coordinates.latitude ?? loadingString}'),
       Text('Longitude: ${coordinates.longitude ?? loadingString}'),
       Semantics(
-        child: Text('Heading: ${heading == null ? "Unknown" : headingToString(heading)}'),
+        child: Text('Heading: ${coordinates.heading == null ? "Unknown" : headingToString(coordinates.heading)}'),
         liveRegion: true
       ),
       Text('Speed: $speedString'),
@@ -91,14 +90,14 @@ class GpsTabState extends State<GpsTab> {
   void updatePosition(LocationData currentPosition) {
     coordinates.latitude = currentPosition.latitude;
     coordinates.longitude = currentPosition.longitude;
-    heading = currentPosition.heading;
+    coordinates.heading = currentPosition.heading;
     altitude = currentPosition.altitude;
     speed = currentPosition.speed;
     coordinates.accuracy = currentPosition.accuracy;
     lastUpdated = currentPosition.time ~/ 1000;
     if (coordinates.savedLatitude != null && coordinates.savedLongitude != null) {
       coordinates.distance = distanceBetween(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
-      coordinates.heading= bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
+      coordinates.headingToTarget = bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
     }
   }
 }

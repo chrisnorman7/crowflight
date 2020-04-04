@@ -19,6 +19,7 @@ Future<void> main() async {
   runApp(CheckLocationPermissionsWidget());
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   vibrationEnabled = prefs.getBool(vibrationEnabledPreferenceName) ?? vibrationEnabled;
+  compassStyle = prefs.getInt(compassStylePreferenceName) ?? compassStyle;
   final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
   if (savedPlacesJson != null) {
     final dynamic mapList = jsonDecode(savedPlacesJson);

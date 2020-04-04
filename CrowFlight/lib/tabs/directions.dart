@@ -48,7 +48,7 @@ class DirectionsTabState extends State<DirectionsTab> {
       }
       directionsString = 'Within ${distanceToString(coordinates.accuracy)}.';
     } else {
-      directionsString = '${distanceToString(coordinates.distance)} at ${headingToString(coordinates.heading)}.';
+      directionsString = '${distanceToString(coordinates.distance)} at ${headingToString(compassStyle == CompassStyles.absolute.index ? coordinates.headingToTarget : relativeBearing(coordinates.heading, coordinates.headingToTarget))}.';
     }
     final List<Widget> rows = <Widget>[
       RaisedButton(
