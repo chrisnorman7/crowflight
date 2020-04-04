@@ -59,8 +59,8 @@ class GpsTabState extends State<GpsTab> {
     }
     final List<Widget> rows = <Widget>[
       const Text('GPS Information'),
-      Text('Latitude: ${coordinates.latitude == null ? loadingString : coordinates.latitude}'),
-      Text('Longitude: ${coordinates.longitude == null ? loadingString : coordinates.longitude}'),
+      Text('Latitude: ${coordinates.latitude ?? loadingString}'),
+      Text('Longitude: ${coordinates.longitude ?? loadingString}'),
       Semantics(
         child: Text('Heading: ${heading == null ? "Unknown" : headingToString(heading)}'),
         liveRegion: true
