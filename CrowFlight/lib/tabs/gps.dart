@@ -98,7 +98,7 @@ class GpsTabState extends State<GpsTab> {
     lastUpdated = currentPosition.time ~/ 1000;
     if (coordinates.savedLatitude != null && coordinates.savedLongitude != null) {
       coordinates.distance = distanceBetween(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
-      coordinates.bearing = bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
+      coordinates.heading= bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
     }
   }
 }

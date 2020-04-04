@@ -43,8 +43,10 @@ class SavedPlacesTabState extends State<SavedPlacesTab> {
           subtitle: Text('${place.latitude},${place.longitude}'),
           onTap: () {
             final SavedPlace place = savedPlacesList[index ~/ 2];
+            print(place);
             coordinates.savedLatitude = place.latitude;
             coordinates.savedLongitude = place.longitude;
+            coordinates.targetName = place.title;
             DefaultTabController.of(context).animateTo(1);
           }
         );

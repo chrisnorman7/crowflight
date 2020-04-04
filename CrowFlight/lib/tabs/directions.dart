@@ -35,7 +35,7 @@ class DirectionsTabState extends State<DirectionsTab> {
     if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
       savedCoordinatesString = 'No coordinates have been saved yet.';
     } else {
-      savedCoordinatesString = '${coordinates.savedLatitude},${coordinates.savedLongitude}';
+      savedCoordinatesString = '${coordinates.targetName ?? "Target Coordinates"}: ${coordinates.savedLatitude},${coordinates.savedLongitude}';
     }
     String directionsString;
     if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
@@ -48,7 +48,7 @@ class DirectionsTabState extends State<DirectionsTab> {
       }
       directionsString = 'Within ${distanceToString(coordinates.accuracy)}.';
     } else {
-      directionsString = '${distanceToString(coordinates.distance)} at ${coordinates.bearing.toInt()} degrees.';
+      directionsString = '${distanceToString(coordinates.distance)} at ${headingToString(coordinates.heading)}.';
     }
     final List<Widget> rows = <Widget>[
       RaisedButton(
@@ -57,7 +57,8 @@ class DirectionsTabState extends State<DirectionsTab> {
           coordinates.savedLatitude = null;
           coordinates.savedLongitude = null;
           coordinates.distance = null;
-          coordinates.bearing = null;
+          coordinates.heading = null;
+          coordinates.targetName = null;
         }
       ),
       Text(savedCoordinatesString),
@@ -69,6 +70,7 @@ class DirectionsTabState extends State<DirectionsTab> {
         onPressed: () {
           coordinates.savedLatitude = coordinates.latitude;
           coordinates.savedLongitude = coordinates.longitude;
+          coordinates.targetName = null;
         },
         tooltip: 'Save Current Coordinates',
         child: Icon(Icons.add),

@@ -24,7 +24,8 @@ class Coordinates {
   double savedLongitude;
   double distance;
   double accuracy;
-  double bearing;
+  double heading;
+  String targetName;
 }
 
 final Coordinates coordinates = Coordinates();
