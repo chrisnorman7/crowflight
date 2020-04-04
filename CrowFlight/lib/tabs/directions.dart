@@ -61,7 +61,10 @@ class DirectionsTabState extends State<DirectionsTab> {
         }
       ),
       Text(savedCoordinatesString),
-      Text(directionsString),
+      Semantics(
+        child: Text(directionsString),
+        liveRegion: true
+      ),
       FloatingActionButton(
         onPressed: () {
           coordinates.savedLatitude = coordinates.latitude;
