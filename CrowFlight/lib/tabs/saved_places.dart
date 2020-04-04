@@ -35,8 +35,10 @@ class SavedPlacesTabState extends State<SavedPlacesTab> {
             onPressed: () => pushRoute(context, AddSavedPlaceWidget())
           );
         }
-        return GestureDetector(
-          child: Text(savedPlacesList[index - 1].title),
+        final SavedPlace place = savedPlacesList[index - 1];
+        return ListTile(
+          title: Text(place.title),
+          subtitle: Text('${place.latitude},${place.longitude}'),
           onTap: () {
             final SavedPlace place = savedPlacesList[index ~/ 2];
             coordinates.savedLatitude = place.latitude;
