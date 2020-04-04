@@ -81,7 +81,7 @@ class GpsTabState extends State<GpsTab> {
       itemCount: rows.length * 2,
       itemBuilder: (BuildContext context, int index) {
         if (index.isOdd) {
-          return const Divider(height: 65);
+          return const Divider(height: 50);
         } else {
           return rows[index ~/ 2];
         }
