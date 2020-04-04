@@ -35,7 +35,14 @@ class SavedPlacesTabState extends State<SavedPlacesTab> {
             onPressed: () => pushRoute(context, AddSavedPlaceWidget())
           );
         }
-        return Text(savedPlacesList[index - 1].title);
+        return GestureDetector(
+          child: Text(savedPlacesList[index - 1].title),
+          onTap: () {
+            final SavedPlace place = savedPlacesList[index ~/ 2];
+            coordinates.savedLatitude = place.latitude;
+            coordinates.savedLongitude = place.longitude;
+          }
+        );
       },
       itemCount: savedPlacesList.length + 1
     );
