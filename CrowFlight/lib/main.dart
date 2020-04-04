@@ -21,7 +21,27 @@ Future<void> main() async {
   vibrationEnabled = prefs.getBool(vibrationEnabledPreferenceName) ?? vibrationEnabled;
   compassStyle = prefs.getInt(compassStylePreferenceName) ?? compassStyle;
   final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
-  if (savedPlacesJson != null) {
+  if (savedPlacesJson == null) {
+    if (savedPlacesList.isEmpty == true) {
+      <SavedPlace>[
+        SavedPlace(
+          latitude: -31.5077519,
+          longitude: 115.598664,
+          title: 'Entrance to Two Rocks dunes'
+        ),
+        SavedPlace(
+          latitude: -31.5119972,
+          longitude: 115.5970434,
+          title: 'Exit from Two Rocks dunes'
+        ),
+        SavedPlace(
+          latitude: 52.4472342,
+          longitude: -1.4701047,
+          title: 'Bench by the Wyken Slough'
+        )
+      ].forEach(savedPlacesList.add);
+    }
+  } else {
     final dynamic mapList = jsonDecode(savedPlacesJson);
     mapList.forEach((dynamic element) {
       savedPlacesList.add(
