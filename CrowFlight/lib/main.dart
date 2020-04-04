@@ -42,6 +42,7 @@ Future<void> main() async {
     permissionGranted = await location.requestPermission();
   }
     if (serviceEnabled && permissionGranted == PermissionStatus.granted) {
+    await location.changeSettings(accuracy: LocationAccuracy.high);
     runApp(MyApp());
   } else {
     runApp(NoLocationPermissionWidget());
