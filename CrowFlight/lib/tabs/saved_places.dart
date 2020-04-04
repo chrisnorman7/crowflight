@@ -1,4 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+import '../constants.dart';
+import '../forms/add_saved_place.dart';
+import '../saved_place.dart';
+import '../utils.dart';
+
 import 'base.dart';
 
 class SavedPlacesTab extends StatefulWidget {
@@ -7,10 +15,36 @@ class SavedPlacesTab extends StatefulWidget {
 }
 
 class SavedPlacesTabState extends State<SavedPlacesTab> {
+  StreamSubscription<List<SavedPlace>> _listener;
+
+  @override
+  void initState() {
+    super.initState();
+    _listener = savedPlacesStreamController.stream.listen((List<SavedPlace> savedPlaces) {
+      setState(() => null);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    const Center center = Center(child: Text('Saved places should show up here in a list view thingy.'));
-    return center;
+    return ListView.builder(
+      itemBuilder: (BuildContext context, int index) {
+        if (index == 0) {
+          return FloatingActionButton(
+            tooltip: 'Add',
+            onPressed: () => pushRoute(context, AddSavedPlaceWidget())
+          );
+        }
+        return Text(savedPlacesList[index - 1].title);
+      },
+      itemCount: savedPlacesList.length + 1
+    );
+  }
+  
+  @override
+  void dispose() {
+    _listener.cancel();
+    super.dispose();
   }
 }
 

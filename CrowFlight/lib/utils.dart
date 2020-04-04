@@ -1,5 +1,9 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+
+import 'constants.dart';
+
 String distanceToString(num metres) {
   if (metres > 1000) {
     return '${(metres / 1000).toStringAsFixed(2)} km';
@@ -33,4 +37,19 @@ double distanceBetween(double lat1, double lon1, double lat2, double lon2) {
     sin(fi1) * sin(fi2) + cos(fi1) * cos(fi2) *
     cos(deltaLambda)
   ) * R;
+}
+
+void pushRoute(BuildContext context, Widget route) {
+  Navigator.push(
+    context,
+    MaterialPageRoute <void>(
+      builder: (BuildContext context) => route
+    )
+  );
+}
+
+void updateSavedPlaces() {
+  if (savedPlacesStreamController.hasListener == true) {
+    savedPlacesStreamController.add(savedPlacesList);
+  }
 }

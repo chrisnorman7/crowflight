@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'package:location/location.dart';
+
+import 'saved_place.dart';
 
 const String loadingString = 'Loading...';
 const int metresPerKilometre = 1000;
@@ -26,3 +29,7 @@ class Coordinates {
 }
 
 final Coordinates coordinates = Coordinates();
+
+List<SavedPlace> savedPlacesList = <SavedPlace>[];
+
+final StreamController<List<SavedPlace>> savedPlacesStreamController = StreamController<List<SavedPlace>>.broadcast();
