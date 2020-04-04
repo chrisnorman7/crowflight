@@ -41,6 +41,7 @@ class SavedPlacesTabState extends State<SavedPlacesTab> {
             final SavedPlace place = savedPlacesList[index ~/ 2];
             coordinates.savedLatitude = place.latitude;
             coordinates.savedLongitude = place.longitude;
+            DefaultTabController.of(context).index = 1;
           }
         );
       },

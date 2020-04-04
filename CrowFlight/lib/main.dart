@@ -37,29 +37,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Text name = Text(appName);
-    return MaterialApp(
-      home: DefaultTabController(
-        length: tabs.length,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
-              tabs: tabs.map(
-                (CrowFlightTab tab) => Tab(
-                  text: tab.title,
-                  icon: Icon(tab.icon)
-                )
-              ).toList()
-            ),
-            title: name,
+    final DefaultTabController tabController = DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: tabs.map(
+              (CrowFlightTab tab) => Tab(
+                text: tab.title,
+                icon: Icon(tab.icon)
+              )
+            ).toList()
           ),
-          body: TabBarView(
-            children: tabs.map(
-              (CrowFlightTab tab) => tab.widget
-            ).toList(),
-          ),
+          title: const Text(appName),
         ),
-      ),
+        body: TabBarView(
+          children: tabs.map(
+            (CrowFlightTab tab) => tab.widget
+          ).toList()
+        )
+      )
+    );
+    return MaterialApp(
+      home: tabController
     );
   }
 }
