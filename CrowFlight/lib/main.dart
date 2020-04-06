@@ -23,10 +23,10 @@ Future<void> main() async {
   movingVibrationDuration = prefs.getInt(movingVibrationDurationPreferenceName) ?? movingVibrationDuration;
   distanceMultiplier = prefs.getInt(distanceMultiplierPreferenceName) ?? distanceMultiplier;
   vibrateInterval = prefs.getInt(vibrateIntervalPreferenceName) ?? vibrateInterval;
-  final int temporaryCompassStyle = prefs.getInt(compassStylePreferenceName) ?? compassStyle.index;
-  compassStyle = CompassStyle.values[temporaryCompassStyle];
-  final int temporaryGpsAccuracy = prefs.getInt(gpsAccuracyPreferenceName) ?? compassStyle.index;
-  gpsAccuracy = LocationAccuracy.values[temporaryGpsAccuracy];
+  final int compassStyleIndex = prefs.getInt(compassStylePreferenceName) ?? compassStyle.index;
+  compassStyle = CompassStyle.values[compassStyleIndex];
+  final int gpsAccuracyIndex = prefs.getInt(gpsAccuracyPreferenceName) ?? gpsAccuracy.index;
+  gpsAccuracy = LocationAccuracy.values[gpsAccuracyIndex];
   final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
   if (savedPlacesJson == null) {
     if (savedPlacesList.isEmpty == true) {
