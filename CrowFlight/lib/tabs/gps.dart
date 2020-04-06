@@ -15,27 +15,29 @@ class GpsTab extends StatefulWidget {
 class GpsTabState extends State<GpsTab> {
   double speed;
   double altitude;
-  int lastUpdated;
-  static String lastUpdatedString = 'Loading...';
+  double lastUpdated;
+  String lastUpdatedString = 'Loading...';
   Timer timer;
 
   @override
   void initState() {
     super.initState();
-    const Duration duration = Duration(seconds: lastUpdatedTimerInterval);
-    timer = Timer.periodic(duration, (Timer t) {
-      if (lastUpdated == null) {
-        lastUpdatedString = 'Never';
-      } else {
-        final DateTime now = DateTime.now();
-        final int nowSeconds = now.millisecondsSinceEpoch~/ 1000;
-        if (lastUpdated > nowSeconds) {
-          lastUpdatedString = 'Somehow in the future...';
-        } else {
-          final int seconds = nowSeconds - lastUpdated;
-          final String plural = seconds == 1 ? 'second' : 'seconds';
-          lastUpdatedString = '$seconds $plural ago';
-        }
+    timer = Timer.periodic(const Duration(seconds: lastUpdatedTimerInterval), (Timer t) {
+      if (mounted) {
+        setState(() {
+          if (lastUpdated == null) {
+            lastUpdatedString = 'Never';
+          } else {
+            final DateTime now = DateTime.now();
+            final int nowSeconds = now.millisecondsSinceEpoch;
+            if (lastUpdated > nowSeconds) {
+              lastUpdatedString = 'Now';
+            } else {
+              final double seconds = (nowSeconds - lastUpdated) / 1000;
+              lastUpdatedString = '${seconds.toStringAsFixed(2)} seconds ago';
+            }
+          }
+        });
       }
     });
   }
@@ -87,6 +89,7 @@ class GpsTabState extends State<GpsTab> {
       }
     );
   }
+
   void updatePosition(LocationData currentPosition) {
     coordinates.latitude = currentPosition.latitude;
     coordinates.longitude = currentPosition.longitude;
@@ -94,7 +97,7 @@ class GpsTabState extends State<GpsTab> {
     altitude = currentPosition.altitude;
     speed = currentPosition.speed;
     coordinates.accuracy = currentPosition.accuracy;
-    lastUpdated = currentPosition.time ~/ 1000;
+    lastUpdated = currentPosition.time;
     if (coordinates.savedLatitude != null && coordinates.savedLongitude != null) {
       coordinates.distance = distanceBetween(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
       coordinates.headingToTarget = bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);

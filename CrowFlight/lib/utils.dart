@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
@@ -89,4 +90,10 @@ Future<void> saveSavedPlaces() async {
     return place.toJson();
   }).toList();
   prefs.setString(savedPlacesListPreferenceName, jsonEncode(json));
+}
+
+Future<bool> changeGpsAccuracy(LocationAccuracy accuracy) {
+  return location.changeSettings(
+    accuracy: LocationAccuracy.high,
+  );
 }

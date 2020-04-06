@@ -8,18 +8,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'get_location.dart';
 import 'saved_place.dart';
-
 import 'tabs/base.dart';
 import 'tabs/directions.dart';
 import 'tabs/gps.dart';
 import 'tabs/saved_places.dart';
 import 'tabs/settings.dart';
+import 'utils.dart';
 
 Future<void> main() async {
   runApp(CheckLocationPermissionsWidget());
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   vibrationEnabled = prefs.getBool(vibrationEnabledPreferenceName) ?? vibrationEnabled;
-  compassStyle = prefs.getInt(compassStylePreferenceName) ?? compassStyle;
+  arrivedVibrationDuration = prefs.getInt(arrivedVibrationDurationPreferenceName) ?? arrivedVibrationDuration;
+  movingVibrationDuration = prefs.getInt(movingVibrationDurationPreferenceName) ?? movingVibrationDuration;
+  distanceMultiplier = prefs.getInt(distanceMultiplierPreferenceName) ?? distanceMultiplier;
+  vibrateInterval = prefs.getInt(vibrateIntervalPreferenceName) ?? vibrateInterval;
+  final int temporaryCompassStyle = prefs.getInt(compassStylePreferenceName) ?? compassStyle.index;
+  compassStyle = CompassStyle.values[temporaryCompassStyle];
+  final int temporaryGpsAccuracy = prefs.getInt(gpsAccuracyPreferenceName) ?? compassStyle.index;
+  gpsAccuracy = LocationAccuracy.values[temporaryGpsAccuracy];
   final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
   if (savedPlacesJson == null) {
     if (savedPlacesList.isEmpty == true) {
@@ -62,8 +69,8 @@ Future<void> main() async {
     permissionGranted = await location.requestPermission();
   }
     if (serviceEnabled && permissionGranted == PermissionStatus.granted) {
-    await location.changeSettings(accuracy: LocationAccuracy.high);
-    runApp(MyApp());
+      await changeGpsAccuracy(gpsAccuracy);
+      runApp(MyApp());
   } else {
     runApp(NoLocationPermissionWidget());
   }
