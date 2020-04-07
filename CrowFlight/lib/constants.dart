@@ -12,7 +12,8 @@ const int directionsTimerInterval = 200; // In milliseconds.
 // All vibration durations given in milliseconds.
 const String vibrationEnabledPreferenceName = 'vibrationEnabled';
 bool vibrationEnabled = true;
-const String arrivedVibrationDurationPreferenceName = 'arrivedVibrationDuration';
+const String arrivedVibrationDurationPreferenceName =
+    'arrivedVibrationDuration';
 int arrivedVibrationDuration = 10;
 
 const String movingVibrationDurationPreferenceName = 'movingVibrationDuration';
@@ -23,7 +24,6 @@ int distanceMultiplier = 100;
 
 const String vibrateIntervalPreferenceName = 'vibrateInterval';
 int vibrateInterval = 50;
-
 
 const String gpsAccuracyPreferenceName = 'gpsAccuracy';
 LocationAccuracy gpsAccuracy = LocationAccuracy.high;
@@ -45,14 +45,12 @@ final Coordinates coordinates = Coordinates();
 const String savedPlacesListPreferenceName = 'savedPlaces';
 List<SavedPlace> savedPlacesList = <SavedPlace>[];
 
-final StreamController<List<SavedPlace>> savedPlacesStreamController = StreamController<List<SavedPlace>>.broadcast();
+final StreamController<List<SavedPlace>> savedPlacesStreamController =
+    StreamController<List<SavedPlace>>.broadcast();
 
-enum CompassStyle {
-  absolute,
-  relative
-}
+enum CompassStyle { absolute, relative }
 
-const Map<CompassStyle,String> compassStyles = <CompassStyle, String>{
+const Map<CompassStyle, String> compassStyles = <CompassStyle, String>{
   CompassStyle.absolute: 'Absolute',
   CompassStyle.relative: 'Relative'
 };
@@ -60,7 +58,7 @@ const Map<CompassStyle,String> compassStyles = <CompassStyle, String>{
 const String compassStylePreferenceName = 'compassStyle';
 CompassStyle compassStyle = CompassStyle.absolute;
 
-final Map<LocationAccuracy,String> gpsAccuracies = <LocationAccuracy,String>{
+final Map<LocationAccuracy, String> gpsAccuracies = <LocationAccuracy, String>{
   LocationAccuracy.powerSave: 'Power saving',
   LocationAccuracy.low: 'Low',
   LocationAccuracy.balanced: 'Medium',

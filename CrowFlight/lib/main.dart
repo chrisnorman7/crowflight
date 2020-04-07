@@ -18,46 +18,51 @@ import 'utils.dart';
 Future<void> main() async {
   runApp(CheckLocationPermissionsWidget());
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  vibrationEnabled = prefs.getBool(vibrationEnabledPreferenceName) ?? vibrationEnabled;
-  arrivedVibrationDuration = prefs.getInt(arrivedVibrationDurationPreferenceName) ?? arrivedVibrationDuration;
-  movingVibrationDuration = prefs.getInt(movingVibrationDurationPreferenceName) ?? movingVibrationDuration;
-  distanceMultiplier = prefs.getInt(distanceMultiplierPreferenceName) ?? distanceMultiplier;
-  vibrateInterval = prefs.getInt(vibrateIntervalPreferenceName) ?? vibrateInterval;
-  final int compassStyleIndex = prefs.getInt(compassStylePreferenceName) ?? compassStyle.index;
+  vibrationEnabled =
+      prefs.getBool(vibrationEnabledPreferenceName) ?? vibrationEnabled;
+  arrivedVibrationDuration =
+      prefs.getInt(arrivedVibrationDurationPreferenceName) ??
+          arrivedVibrationDuration;
+  movingVibrationDuration =
+      prefs.getInt(movingVibrationDurationPreferenceName) ??
+          movingVibrationDuration;
+  distanceMultiplier =
+      prefs.getInt(distanceMultiplierPreferenceName) ?? distanceMultiplier;
+  vibrateInterval =
+      prefs.getInt(vibrateIntervalPreferenceName) ?? vibrateInterval;
+  final int compassStyleIndex =
+      prefs.getInt(compassStylePreferenceName) ?? compassStyle.index;
   compassStyle = CompassStyle.values[compassStyleIndex];
-  final int gpsAccuracyIndex = prefs.getInt(gpsAccuracyPreferenceName) ?? gpsAccuracy.index;
+  final int gpsAccuracyIndex =
+      prefs.getInt(gpsAccuracyPreferenceName) ?? gpsAccuracy.index;
   gpsAccuracy = LocationAccuracy.values[gpsAccuracyIndex];
   final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
   if (savedPlacesJson == null) {
     if (savedPlacesList.isEmpty == true) {
       <SavedPlace>[
         SavedPlace(
-          latitude: -31.5077519,
-          longitude: 115.598664,
-          title: 'Entrance to Two Rocks dunes'
-        ),
+            latitude: -31.5077519,
+            longitude: 115.598664,
+            title: 'Entrance to Two Rocks dunes'),
         SavedPlace(
-          latitude: -31.5119972,
-          longitude: 115.5970434,
-          title: 'Exit from Two Rocks dunes'
-        ),
+            latitude: -31.5119972,
+            longitude: 115.5970434,
+            title: 'Exit from Two Rocks dunes'),
         SavedPlace(
-          latitude: 52.4472342,
-          longitude: -1.4701047,
-          title: 'Bench by the Wyken Slough'
-        )
+            latitude: 52.4472342,
+            longitude: -1.4701047,
+            title: 'Bench by the Wyken Slough')
       ].forEach(savedPlacesList.add);
     }
   } else {
     final dynamic mapList = jsonDecode(savedPlacesJson);
     mapList.forEach((dynamic element) {
-      savedPlacesList.add(
-        SavedPlace(
+      savedPlacesList.add(SavedPlace(
           title: element['title'], // ignore: argument_type_not_assignable
           latitude: element['latitude'], // ignore: argument_type_not_assignable
-          longitude: element['longitude'] // ignore: argument_type_not_assignable
-        )
-      );
+          longitude: // ignore: argument_type_not_assignable
+              element['longitude']
+          ));
     });
   }
   bool serviceEnabled = await location.serviceEnabled();
@@ -68,9 +73,9 @@ Future<void> main() async {
   if (permissionGranted == PermissionStatus.denied) {
     permissionGranted = await location.requestPermission();
   }
-    if (serviceEnabled && permissionGranted == PermissionStatus.granted) {
-      await changeGpsAccuracy(gpsAccuracy);
-      runApp(MyApp());
+  if (serviceEnabled && permissionGranted == PermissionStatus.granted) {
+    await changeGpsAccuracy(gpsAccuracy);
+    runApp(MyApp());
   } else {
     runApp(NoLocationPermissionWidget());
   }
@@ -87,28 +92,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DefaultTabController tabController = DefaultTabController(
-      length: tabs.length,
-      child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
-            tabs: tabs.map(
-              (CrowFlightTab tab) => Tab(
-                text: tab.title,
-                icon: Icon(tab.icon)
-              )
-            ).toList()
-          ),
-          title: const Text(appName),
-        ),
-        body: TabBarView(
-          children: tabs.map(
-            (CrowFlightTab tab) => tab.widget
-          ).toList()
-        )
-      )
-    );
-    return MaterialApp(
-      home: tabController
-    );
+        length: tabs.length,
+        child: Scaffold(
+            appBar: AppBar(
+              bottom: TabBar(
+                  tabs: tabs
+                      .map((CrowFlightTab tab) =>
+                          Tab(text: tab.title, icon: Icon(tab.icon)))
+                      .toList()),
+              title: const Text(appName),
+            ),
+            body: TabBarView(
+                children:
+                    tabs.map((CrowFlightTab tab) => tab.widget).toList())));
+    return MaterialApp(home: tabController);
   }
 }

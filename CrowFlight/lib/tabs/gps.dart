@@ -22,7 +22,8 @@ class GpsTabState extends State<GpsTab> {
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(const Duration(seconds: lastUpdatedTimerInterval), (Timer t) {
+    timer = Timer.periodic(const Duration(seconds: lastUpdatedTimerInterval),
+        (Timer t) {
       if (mounted) {
         setState(() {
           if (lastUpdated == null) {
@@ -63,11 +64,12 @@ class GpsTabState extends State<GpsTab> {
       Text('Latitude: ${coordinates.latitude ?? loadingString}'),
       Text('Longitude: ${coordinates.longitude ?? loadingString}'),
       Semantics(
-        child: Text('Heading: ${coordinates.heading == null ? "Unknown" : headingToString(coordinates.heading)}'),
-        liveRegion: true
-      ),
+          child: Text(
+              'Heading: ${coordinates.heading == null ? "Unknown" : headingToString(coordinates.heading)}'),
+          liveRegion: true),
       Text('Speed: $speedString'),
-      Text('Altitude: ${altitude == null ? "Unknown" : distanceToString(altitude)}'),
+      Text(
+          'Altitude: ${altitude == null ? "Unknown" : distanceToString(altitude)}'),
       Text('Accuracy: $accuracyString'),
       Text('Last updated: $lastUpdatedString')
     ];
@@ -79,15 +81,14 @@ class GpsTabState extends State<GpsTab> {
       }
     });
     return ListView.builder(
-      itemCount: rows.length * 2,
-      itemBuilder: (BuildContext context, int index) {
-        if (index.isOdd) {
-          return const Divider(height: 50);
-        } else {
-          return rows[index ~/ 2];
-        }
-      }
-    );
+        itemCount: rows.length * 2,
+        itemBuilder: (BuildContext context, int index) {
+          if (index.isOdd) {
+            return const Divider(height: 50);
+          } else {
+            return rows[index ~/ 2];
+          }
+        });
   }
 
   void updatePosition(LocationData currentPosition) {
@@ -98,11 +99,21 @@ class GpsTabState extends State<GpsTab> {
     speed = currentPosition.speed;
     coordinates.accuracy = currentPosition.accuracy;
     lastUpdated = currentPosition.time;
-    if (coordinates.savedLatitude != null && coordinates.savedLongitude != null) {
-      coordinates.distance = distanceBetween(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
-      coordinates.headingToTarget = bearing(coordinates.latitude, coordinates.longitude, coordinates.savedLatitude, coordinates.savedLongitude);
+    if (coordinates.savedLatitude != null &&
+        coordinates.savedLongitude != null) {
+      coordinates.distance = distanceBetween(
+          coordinates.latitude,
+          coordinates.longitude,
+          coordinates.savedLatitude,
+          coordinates.savedLongitude);
+      coordinates.headingToTarget = bearing(
+          coordinates.latitude,
+          coordinates.longitude,
+          coordinates.savedLatitude,
+          coordinates.savedLongitude);
     }
   }
 }
 
-final CrowFlightTab gps = CrowFlightTab('GPS Information', Icons.gps_fixed, GpsTab());
+final CrowFlightTab gps =
+    CrowFlightTab('GPS Information', Icons.gps_fixed, GpsTab());

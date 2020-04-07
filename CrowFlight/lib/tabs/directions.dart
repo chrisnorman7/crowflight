@@ -32,13 +32,16 @@ class DirectionsTabState extends State<DirectionsTab> {
   @override
   Widget build(BuildContext context) {
     String savedCoordinatesString;
-    if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
+    if (coordinates.savedLatitude == null ||
+        coordinates.savedLongitude == null) {
       savedCoordinatesString = 'No coordinates have been saved yet.';
     } else {
-      savedCoordinatesString = '${coordinates.targetName ?? "Target Coordinates"}: ${coordinates.savedLatitude},${coordinates.savedLongitude}';
+      savedCoordinatesString =
+          '${coordinates.targetName ?? "Target Coordinates"}: ${coordinates.savedLatitude},${coordinates.savedLongitude}';
     }
     String directionsString;
-    if (coordinates.savedLatitude == null || coordinates.savedLongitude == null) {
+    if (coordinates.savedLatitude == null ||
+        coordinates.savedLongitude == null) {
       directionsString = 'No directions needed.';
     } else if (coordinates.distance == null) {
       directionsString = 'Loading directions...';
@@ -48,24 +51,21 @@ class DirectionsTabState extends State<DirectionsTab> {
       }
       directionsString = 'Within ${distanceToString(coordinates.accuracy)}.';
     } else {
-      directionsString = '${distanceToString(coordinates.distance)} at ${headingToString(compassStyle == CompassStyle.absolute ? coordinates.headingToTarget : relativeBearing(coordinates.heading, coordinates.headingToTarget))}.';
+      directionsString =
+          '${distanceToString(coordinates.distance)} at ${headingToString(compassStyle == CompassStyle.absolute ? coordinates.headingToTarget : relativeBearing(coordinates.heading, coordinates.headingToTarget))}.';
     }
     final List<Widget> rows = <Widget>[
       RaisedButton(
-        child: const Text('Clear Saved Coordinates'),
-        onPressed: () {
-          coordinates.savedLatitude = null;
-          coordinates.savedLongitude = null;
-          coordinates.distance = null;
-          coordinates.heading = null;
-          coordinates.targetName = null;
-        }
-      ),
+          child: const Text('Clear Saved Coordinates'),
+          onPressed: () {
+            coordinates.savedLatitude = null;
+            coordinates.savedLongitude = null;
+            coordinates.distance = null;
+            coordinates.heading = null;
+            coordinates.targetName = null;
+          }),
       Text(savedCoordinatesString),
-      Semantics(
-        child: Text(directionsString),
-        liveRegion: true
-      ),
+      Semantics(child: Text(directionsString), liveRegion: true),
       FloatingActionButton(
         onPressed: () {
           coordinates.savedLatitude = coordinates.latitude;
@@ -77,27 +77,29 @@ class DirectionsTabState extends State<DirectionsTab> {
       ),
     ];
     return ListView.builder(
-      itemCount: rows.length * 2,
-      itemBuilder: (BuildContext context, int index) {
-        if (index.isOdd) {
-          return const Divider(height: 100);
-        } else {
-          return rows[index ~/ 2];
-        }
-      }
-    );
+        itemCount: rows.length * 2,
+        itemBuilder: (BuildContext context, int index) {
+          if (index.isOdd) {
+            return const Divider(height: 100);
+          } else {
+            return rows[index ~/ 2];
+          }
+        });
   }
-  
+
   void vibrate() {
     if (coordinates.distance == null) {
       return;
     }
     final int now = DateTime.now().millisecondsSinceEpoch;
-    if ((now - lastVibrationTime) >= (coordinates.distance * distanceMultiplier) && vibrationEnabled == true) {
-        lastVibrationTime = now;
-        Vibration.vibrate(duration: movingVibrationDuration);
+    if ((now - lastVibrationTime) >=
+            (coordinates.distance * distanceMultiplier) &&
+        vibrationEnabled == true) {
+      lastVibrationTime = now;
+      Vibration.vibrate(duration: movingVibrationDuration);
     }
   }
 }
 
-final CrowFlightTab directions = CrowFlightTab('Directions', Icons.directions_walk, DirectionsTab());
+final CrowFlightTab directions =
+    CrowFlightTab('Directions', Icons.directions_walk, DirectionsTab());
