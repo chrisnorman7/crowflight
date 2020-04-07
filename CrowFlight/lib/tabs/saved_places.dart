@@ -103,7 +103,7 @@ class SavedPlacesTabState extends State<SavedPlacesTab> {
                 FlatButton(
                     child: const Text('OK'),
                     onPressed: () {
-                      if (controller.text.isNotEmpty == true) {
+                      if (controller.text.isNotEmpty) {
                         place.title = controller.text;
                         updateSavedPlaces();
                         Navigator.of(context).pop();

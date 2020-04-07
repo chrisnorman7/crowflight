@@ -74,7 +74,7 @@ class GpsTabState extends State<GpsTab> {
       Text('Last updated: $lastUpdatedString')
     ];
     location.onLocationChanged.listen((LocationData currentLocation) {
-      if (mounted == true) {
+      if (mounted) {
         setState(() => updatePosition(currentLocation));
       } else {
         updatePosition(currentLocation);

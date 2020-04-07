@@ -38,7 +38,7 @@ Future<void> main() async {
   gpsAccuracy = LocationAccuracy.values[gpsAccuracyIndex];
   final String savedPlacesJson = prefs.getString(savedPlacesListPreferenceName);
   if (savedPlacesJson == null) {
-    if (savedPlacesList.isEmpty == true) {
+    if (savedPlacesList.isEmpty) {
       <SavedPlace>[
         SavedPlace(
             latitude: -31.5077519,
@@ -61,8 +61,7 @@ Future<void> main() async {
           title: element['title'], // ignore: argument_type_not_assignable
           latitude: element['latitude'], // ignore: argument_type_not_assignable
           longitude: // ignore: argument_type_not_assignable
-              element['longitude']
-          ));
+              element['longitude']));
     });
   }
   bool serviceEnabled = await location.serviceEnabled();

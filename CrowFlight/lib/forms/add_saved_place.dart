@@ -59,7 +59,7 @@ class AddSavedPlaceWidgetState extends State<AddSavedPlaceWidget> {
                   textCapitalization: TextCapitalization.sentences,
                   controller: _titleController,
                   validator: (String value) {
-                    if (value.isEmpty == true) {
+                    if (value.isEmpty) {
                       return 'Saved places must have a title';
                     }
                     return null;

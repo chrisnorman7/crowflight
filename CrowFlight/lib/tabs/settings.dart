@@ -71,7 +71,7 @@ class SettingsTabState extends State<SettingsTab> {
                   controller: TextEditingController(
                       text: arrivedVibrationDuration.toString()),
                   onChanged: (String value) {
-                    if (value.isNotEmpty == true) {
+                    if (value.isNotEmpty) {
                       final int n = int.tryParse(value);
                       if (n != null && n >= 10) {
                         arrivedVibrationDuration = n;
@@ -93,7 +93,7 @@ class SettingsTabState extends State<SettingsTab> {
                   controller: TextEditingController(
                       text: movingVibrationDuration.toString()),
                   onChanged: (String value) {
-                    if (value.isNotEmpty == true) {
+                    if (value.isNotEmpty) {
                       final int n = int.tryParse(value);
                       if (n != null && n >= 10) {
                         movingVibrationDuration = n;
@@ -114,7 +114,7 @@ class SettingsTabState extends State<SettingsTab> {
                   controller: TextEditingController(
                       text: distanceMultiplier.toString()),
                   onChanged: (String value) {
-                    if (value.isNotEmpty == true) {
+                    if (value.isNotEmpty) {
                       final int n = int.tryParse(value);
                       if (n != null && n >= 1) {
                         distanceMultiplier = n;
@@ -134,7 +134,7 @@ class SettingsTabState extends State<SettingsTab> {
                   controller:
                       TextEditingController(text: vibrateInterval.toString()),
                   onChanged: (String value) {
-                    if (value.isNotEmpty == true) {
+                    if (value.isNotEmpty) {
                       final int n = int.tryParse(value);
                       if (n != null && n >= 100) {
                         vibrateInterval = n;

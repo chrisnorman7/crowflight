@@ -52,7 +52,7 @@ void pushRoute(BuildContext context, Widget route) {
 }
 
 void updateSavedPlaces() {
-  if (savedPlacesStreamController.hasListener == true) {
+  if (savedPlacesStreamController.hasListener) {
     savedPlacesStreamController.add(savedPlacesList);
   }
 }

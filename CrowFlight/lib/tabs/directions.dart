@@ -21,7 +21,7 @@ class DirectionsTabState extends State<DirectionsTab> {
     super.initState();
     const Duration duration = Duration(milliseconds: 250);
     timer = Timer.periodic(duration, (Timer t) {
-      if (mounted == true) {
+      if (mounted) {
         setState(() => vibrate());
       } else {
         vibrate();
@@ -46,7 +46,7 @@ class DirectionsTabState extends State<DirectionsTab> {
     } else if (coordinates.distance == null) {
       directionsString = 'Loading directions...';
     } else if (coordinates.distance <= coordinates.accuracy) {
-      if (vibrationEnabled == true) {
+      if (vibrationEnabled) {
         Vibration.vibrate(duration: arrivedVibrationDuration);
       }
       directionsString = 'Within ${distanceToString(coordinates.accuracy)}.';
@@ -94,7 +94,7 @@ class DirectionsTabState extends State<DirectionsTab> {
     final int now = DateTime.now().millisecondsSinceEpoch;
     if ((now - lastVibrationTime) >=
             (coordinates.distance * distanceMultiplier) &&
-        vibrationEnabled == true) {
+        vibrationEnabled) {
       lastVibrationTime = now;
       Vibration.vibrate(duration: movingVibrationDuration);
     }
