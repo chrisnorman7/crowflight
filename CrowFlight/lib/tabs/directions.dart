@@ -63,6 +63,11 @@ class DirectionsTabState extends State<DirectionsTab> {
             coordinates.distance = null;
             coordinates.heading = null;
             coordinates.targetName = null;
+            const List<String> preferenceNames = <String>[
+              savedLatitudePreferenceName,
+              savedLongitudePreferenceName
+            ];
+            preferenceNames.forEach(clearPreference);
           }),
       Text(savedCoordinatesString),
       Semantics(child: Text(directionsString), liveRegion: true),
@@ -71,6 +76,10 @@ class DirectionsTabState extends State<DirectionsTab> {
           coordinates.savedLatitude = coordinates.latitude;
           coordinates.savedLongitude = coordinates.longitude;
           coordinates.targetName = null;
+          savePreferenceDouble(
+              savedLatitudePreferenceName, coordinates.savedLatitude);
+          savePreferenceDouble(
+              savedLongitudePreferenceName, coordinates.savedLongitude);
         },
         tooltip: 'Save Current Coordinates',
         child: Icon(Icons.add),

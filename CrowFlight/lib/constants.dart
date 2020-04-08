@@ -11,7 +11,7 @@ const int directionsTimerInterval = 200; // In milliseconds.
 
 // All vibration durations given in milliseconds.
 const String vibrationEnabledPreferenceName = 'vibrationEnabled';
-bool vibrationEnabled = true;
+bool vibrationEnabled = false;
 const String arrivedVibrationDurationPreferenceName =
     'arrivedVibrationDuration';
 int arrivedVibrationDuration = 10;
@@ -27,6 +27,9 @@ int vibrateInterval = 50;
 
 const String gpsAccuracyPreferenceName = 'gpsAccuracy';
 LocationAccuracy gpsAccuracy = LocationAccuracy.high;
+
+const String savedLatitudePreferenceName = 'savedLatitude';
+const String savedLongitudePreferenceName = 'savedLongitude';
 
 class Coordinates {
   double latitude;
@@ -56,7 +59,7 @@ const Map<CompassStyle, String> compassStyles = <CompassStyle, String>{
 };
 
 const String compassStylePreferenceName = 'compassStyle';
-CompassStyle compassStyle = CompassStyle.absolute;
+CompassStyle compassStyle = CompassStyle.relative;
 
 final Map<LocationAccuracy, String> gpsAccuracies = <LocationAccuracy, String>{
   LocationAccuracy.powerSave: 'Power saving',

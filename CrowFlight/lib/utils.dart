@@ -88,6 +88,16 @@ Future<void> savePreferenceInt(String name, int value) async {
   prefs.setInt(name, value);
 }
 
+Future<void> savePreferenceDouble(String name, double value) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setDouble(name, value);
+}
+
+Future<bool> clearPreference(String name) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.remove(name);
+}
+
 Future<void> saveSavedPlaces() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final List<Map<String, dynamic>> json =

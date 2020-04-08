@@ -64,6 +64,8 @@ Future<void> main() async {
               element['longitude']));
     });
   }
+  coordinates.savedLatitude = prefs.getDouble(savedLatitudePreferenceName);
+  coordinates.savedLongitude = prefs.getDouble(savedLongitudePreferenceName);
   bool serviceEnabled = await location.serviceEnabled();
   if (!serviceEnabled) {
     serviceEnabled = await location.requestService();
