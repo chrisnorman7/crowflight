@@ -1,0 +1,17 @@
+{
+  "cSpell.words": [
+    "Schyler",
+    "Trajan",
+    "analyzer",
+    "crowflight"
+  ],
+  "[dart]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.suggest.insertMode": "replace",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  }
+}
