@@ -64,8 +64,8 @@ class HomePageState extends State<HomePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            SavePositionPage(widget.location)));
+                        builder: (BuildContext context) => SavePositionPage(
+                            widget.location, widget.settings)));
                 break;
               case MenuItems.setRequestedAccuracy:
                 Navigator.push(

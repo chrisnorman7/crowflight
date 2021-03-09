@@ -24,9 +24,15 @@ Map<String, dynamic> _$PointOfInterestToJson(PointOfInterest instance) =>
     };
 
 Settings _$SettingsFromJson(Map<String, dynamic> json) {
-  return Settings()..accuracy = json['accuracy'] as String?;
+  return Settings(
+    pointsOfInterest: (json['pointsOfInterest'] as List<dynamic>?)
+        ?.map((e) => PointOfInterest.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    accuracy: json['accuracy'] as String?,
+  );
 }
 
 Map<String, dynamic> _$SettingsToJson(Settings instance) => <String, dynamic>{
+      'pointsOfInterest': instance.pointsOfInterest,
       'accuracy': instance.accuracy,
     };

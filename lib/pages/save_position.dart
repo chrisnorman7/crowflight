@@ -7,25 +7,28 @@ import 'package:location/location.dart';
 
 import '../cartesian_coordinates.dart';
 import '../gps_coordinates.dart';
+import '../json/settings.dart';
 import '../util.dart';
-
-enum SavePositionStrategy { manual, automatic }
 
 class SavePositionPage extends StatefulWidget {
   final Location location;
+  final Settings settings;
 
-  SavePositionPage(this.location);
+  SavePositionPage(this.location, this.settings);
 
   SavePositionPageState createState() => SavePositionPageState();
 }
 
 class SavePositionPageState extends State<SavePositionPage> {
-  SavePositionStrategy _strategy = SavePositionStrategy.automatic;
   List<GpsCoordinates> _coordinates = <GpsCoordinates>[];
   double? _latitude;
   double? _longitude;
   double? _accuracy;
   StreamSubscription<LocationData>? _locationListener;
+
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  final TextEditingController _nameController =
+      TextEditingController(text: 'Untitled Place');
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +46,13 @@ class SavePositionPageState extends State<SavePositionPage> {
               (averageAccuracy == null || accuracy <= averageAccuracy)) {
             _coordinates
                 .add(GpsCoordinates.create(latitude, longitude, accuracy));
-          } else {
-            print(accuracy);
           }
         });
       });
       child = Center(
         child: Text('Getting current position...'),
       );
-    } else if (_strategy == SavePositionStrategy.automatic) {
+    } else {
       if (_coordinates.isEmpty) {
         child = Center(
           child: Text('Gathering coordinates...'),
@@ -88,47 +89,66 @@ class SavePositionPageState extends State<SavePositionPage> {
         _accuracy = [for (final c in _coordinates) c.accuracy]
                 .reduce((value, element) => value + element) /
             _coordinates.length;
-        child = ListView(
-          children: [
-            ListTile(
-              title: Text('Latitude'),
-              subtitle: Text(lat.toString()),
-            ),
-            ListTile(title: Text('Longitude'), subtitle: Text(lon.toString())),
-            Semantics(
-              child: ListTile(
-                title: Text('Accuracy'),
-                subtitle: Text(accuracy == null
-                    ? 'Unknown'
-                    : '${formatDistance(accuracy)} (${_coordinates.length} ${pluralise("point", _coordinates.length)}'),
-              ),
-              liveRegion: true,
-            ),
-            ListTile(
-              title: Text('Save'),
-              onTap: () => print('$_latitude, $_longitude'),
-            )
-          ],
-        );
+        child = Form(
+            key: _formState,
+            child: ListView(
+              children: [
+                ListTile(
+                  title: TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(labelText: 'Name'),
+                    validator: (String? value) => value == null || value.isEmpty
+                        ? 'You must supply a name'
+                        : null,
+                  ),
+                ),
+                ListTile(
+                  title: Text('Latitude'),
+                  subtitle: Text(lat.toString()),
+                ),
+                ListTile(
+                    title: Text('Longitude'), subtitle: Text(lon.toString())),
+                Semantics(
+                  child: ListTile(
+                    title: Text('Accuracy'),
+                    subtitle: Text(accuracy == null
+                        ? 'Unknown'
+                        : '${formatDistance(accuracy)} (${_coordinates.length} ${pluralise("point", _coordinates.length)}'),
+                  ),
+                  liveRegion: true,
+                ),
+              ],
+            ));
       }
-    } else {
-      child = Text('No form yet.');
     }
     return Scaffold(
       appBar: AppBar(
         title: Text('Save Current Position'),
         actions: [
           IconButton(
-              tooltip: _strategy == SavePositionStrategy.automatic
-                  ? 'Manual'
-                  : 'Automatic',
-              icon: Icon(_strategy == SavePositionStrategy.manual
-                  ? Icons.computer
-                  : Icons.person),
-              onPressed: () => setState(() => _strategy =
-                  (_strategy == SavePositionStrategy.automatic
-                      ? SavePositionStrategy.manual
-                      : SavePositionStrategy.automatic)))
+              icon: Icon(Icons.save),
+              tooltip: 'Save',
+              onPressed:
+                  _latitude == null || _longitude == null || _accuracy == null
+                      ? null
+                      : () {
+                          final double? lat = _latitude;
+                          final double? lon = _longitude;
+                          final double? accuracy = _accuracy;
+                          if (lat != null &&
+                              lon != null &&
+                              accuracy != null &&
+                              _formState.currentState?.validate() == true) {
+                            final PointOfInterest poi = PointOfInterest(
+                                name: _nameController.text,
+                                latitude: lat,
+                                longitude: lon,
+                                accuracy: accuracy);
+                            widget.settings.pointsOfInterest.add(poi);
+                            widget.settings.save();
+                            Navigator.pop(context);
+                          }
+                        })
         ],
       ),
       body: child,

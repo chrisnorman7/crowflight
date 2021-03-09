@@ -25,3 +25,9 @@ String enumName(String? value) {
   }
   return value.split('.').last;
 }
+
+String? doubleValidator(String? value) {
+  if (value == null || double.tryParse(value) == null) {
+    return 'Invalid number.';
+  }
+}

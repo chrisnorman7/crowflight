@@ -33,8 +33,10 @@ class Settings {
   static Settings? _instance;
   static String _settingsKeyName = 'settings';
 
-  Settings({List<PointOfInterest>? points})
-      : pointsOfInterest = points ?? <PointOfInterest>[];
+  Settings(
+      {required List<PointOfInterest>? pointsOfInterest,
+      required this.accuracy})
+      : this.pointsOfInterest = pointsOfInterest ?? <PointOfInterest>[];
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
       _$SettingsFromJson(json);
@@ -48,7 +50,8 @@ class Settings {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? data = await prefs.getString(_settingsKeyName);
     if (data == null) {
-      final Settings s = Settings();
+      final Settings s =
+          Settings(pointsOfInterest: <PointOfInterest>[], accuracy: null);
       await s.save();
       _instance = s;
       return s;
