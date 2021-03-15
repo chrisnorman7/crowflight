@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../cartesian_coordinates.dart';
 import '../gps_coordinates.dart';
@@ -11,10 +11,13 @@ import '../json/settings.dart';
 import '../util.dart';
 
 class SavePositionPage extends StatefulWidget {
-  final Location location;
   final Settings settings;
+  final void Function(PointOfInterest) onSave;
+  final PointOfInterest? poi;
+  final bool includeCoordinates;
 
-  SavePositionPage(this.location, this.settings);
+  SavePositionPage(this.settings, this.onSave, this.includeCoordinates,
+      {this.poi});
 
   SavePositionPageState createState() => SavePositionPageState();
 }
@@ -24,17 +27,18 @@ class SavePositionPageState extends State<SavePositionPage> {
   double? _latitude;
   double? _longitude;
   double? _accuracy;
-  StreamSubscription<LocationData>? _locationListener;
+  StreamSubscription<Position>? _locationListener;
 
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
-  final TextEditingController _nameController =
-      TextEditingController(text: 'Untitled Place');
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     Widget child;
-    if (_locationListener == null) {
-      _locationListener = widget.location.onLocationChanged.listen((event) {
+    if (_locationListener == null && widget.includeCoordinates) {
+      _locationListener = Geolocator.getPositionStream(
+              desiredAccuracy: widget.settings.getAccuracy())
+          .listen((event) {
         setState(() {
           final double? latitude = event.latitude;
           final double? longitude = event.longitude;
@@ -53,7 +57,7 @@ class SavePositionPageState extends State<SavePositionPage> {
         child: Text('Getting current position...'),
       );
     } else {
-      if (_coordinates.isEmpty) {
+      if (_coordinates.isEmpty && widget.includeCoordinates) {
         child = Center(
           child: Text('Gathering coordinates...'),
         );
@@ -62,33 +66,39 @@ class SavePositionPageState extends State<SavePositionPage> {
         if (accuracy != null) {
           _coordinates.removeWhere((element) => element.accuracy > accuracy);
         }
-        // Calculate the average of all the coordinates.
-        double x = 0;
-        double y = 0;
-        double z = 0;
-        final List<CartesianCoordinates> cartesianCoordinates =
-            <CartesianCoordinates>[];
-        for (final GpsCoordinates coordinates in _coordinates) {
-          final cart = CartesianCoordinates(
-              cos(coordinates.latitude) * cos(coordinates.longitude),
-              cos(coordinates.latitude) * sin(coordinates.longitude),
-              sin(coordinates.latitude));
-          cartesianCoordinates.add(cart);
-          x += cart.x;
-          y += cart.y;
-          z += cart.z;
+        final double? lat, lon;
+        if (_coordinates.isNotEmpty) {
+          // Calculate the average of all the coordinates.
+          double x = 0;
+          double y = 0;
+          double z = 0;
+          final List<CartesianCoordinates> cartesianCoordinates =
+              <CartesianCoordinates>[];
+          for (final GpsCoordinates coordinates in _coordinates) {
+            final cart = CartesianCoordinates(
+                cos(coordinates.latitude) * cos(coordinates.longitude),
+                cos(coordinates.latitude) * sin(coordinates.longitude),
+                sin(coordinates.latitude));
+            cartesianCoordinates.add(cart);
+            x += cart.x;
+            y += cart.y;
+            z += cart.z;
+          }
+          x /= cartesianCoordinates.length;
+          y /= cartesianCoordinates.length;
+          z /= cartesianCoordinates.length;
+          lon = atan2(y, x);
+          final double hyp = sqrt(x * x + y * y);
+          lat = atan2(z, hyp);
+          _longitude = lon;
+          _latitude = lat;
+          _accuracy = [for (final c in _coordinates) c.accuracy]
+                  .reduce((value, element) => value + element) /
+              _coordinates.length;
+        } else {
+          lat = widget.poi?.latitude;
+          lon = widget.poi?.longitude;
         }
-        x /= cartesianCoordinates.length;
-        y /= cartesianCoordinates.length;
-        z /= cartesianCoordinates.length;
-        final double lon = atan2(y, x);
-        final double hyp = sqrt(x * x + y * y);
-        final double lat = atan2(z, hyp);
-        _longitude = lon;
-        _latitude = lat;
-        _accuracy = [for (final c in _coordinates) c.accuracy]
-                .reduce((value, element) => value + element) /
-            _coordinates.length;
         child = Form(
             key: _formState,
             child: ListView(
@@ -104,10 +114,13 @@ class SavePositionPageState extends State<SavePositionPage> {
                 ),
                 ListTile(
                   title: Text('Latitude'),
-                  subtitle: Text(lat.toString()),
+                  subtitle:
+                      Text(lat == null ? 'This is a bug' : lat.toString()),
                 ),
                 ListTile(
-                    title: Text('Longitude'), subtitle: Text(lon.toString())),
+                    title: Text('Longitude'),
+                    subtitle:
+                        Text(lon == null ? 'This is a bug' : lon.toString())),
                 Semantics(
                   child: ListTile(
                     title: Text('Accuracy'),
@@ -144,8 +157,7 @@ class SavePositionPageState extends State<SavePositionPage> {
                                 latitude: lat,
                                 longitude: lon,
                                 accuracy: accuracy);
-                            widget.settings.pointsOfInterest.add(poi);
-                            widget.settings.save();
+                            widget.onSave(poi);
                             Navigator.pop(context);
                           }
                         })

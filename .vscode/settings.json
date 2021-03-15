@@ -3,7 +3,8 @@
     "Schyler",
     "Trajan",
     "analyzer",
-    "crowflight"
+    "crowflight",
+    "haversine"
   ],
   "[dart]": {
     "editor.tabSize": 2,

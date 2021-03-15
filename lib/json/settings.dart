@@ -2,6 +2,8 @@
 
 import 'dart:convert';
 
+import 'package:crowflight/util.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +25,24 @@ class PointOfInterest extends GpsCoordinates {
   factory PointOfInterest.fromJson(Map<String, dynamic> json) =>
       _$PointOfInterestFromJson(json);
   Map<String, dynamic> toJson() => _$PointOfInterestToJson(this);
+
+  double distanceBetween(PointOfInterest other) {
+    return Geolocator.distanceBetween(
+        latitude, longitude, other.latitude, other.longitude);
+  }
+
+  double bearingBetween(PointOfInterest other) {
+    return Geolocator.bearingBetween(
+        latitude, longitude, other.latitude, other.longitude);
+  }
+
+  String directionsBetween(PointOfInterest other) {
+    return '${formatDistance(distanceBetween(other))} ${formatBearing(bearingBetween(other))}';
+  }
+
+  String coordinatesString() {
+    return '$latitude ° latitude, $longitude ° longitude';
+  }
 }
 
 @JsonSerializable()
@@ -36,10 +56,18 @@ class Settings {
   Settings(
       {required List<PointOfInterest>? pointsOfInterest,
       required this.accuracy})
-      : this.pointsOfInterest = pointsOfInterest ?? <PointOfInterest>[];
+      : this.pointsOfInterest = pointsOfInterest ??
+            <PointOfInterest>[
+              PointOfInterest(
+                  name: 'Statue of Liberty',
+                  latitude: 40.689263,
+                  longitude: -74.044505,
+                  accuracy: 0.0)
+            ];
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
       _$SettingsFromJson(json);
+
   Map<String, dynamic> toJson() => _$SettingsToJson(this);
 
   static Future<Settings> getInstance() async {
@@ -59,9 +87,23 @@ class Settings {
     return Settings.fromJson(jsonDecode(data));
   }
 
+  static Future<void> clear() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
   Future<void> save() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String data = jsonEncode(this.toJson());
     await prefs.setString(_settingsKeyName, data);
+  }
+
+  LocationAccuracy getAccuracy() {
+    final String? a = accuracy;
+    if (a != null) {
+      return LocationAccuracy.values
+          .firstWhere((element) => element.toString().endsWith(a));
+    }
+    return LocationAccuracy.medium;
   }
 }

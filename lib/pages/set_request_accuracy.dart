@@ -3,40 +3,45 @@ import 'dart:async';
 
 import 'package:crowflight/util.dart';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../json/settings.dart';
 
 class SetRequestAccuracyPage extends StatefulWidget {
-  final Location location;
   final Settings settings;
 
-  SetRequestAccuracyPage(this.location, this.settings);
+  SetRequestAccuracyPage(this.settings);
 
   @override
   SetRequestAccuracyPageState createState() => SetRequestAccuracyPageState();
 }
 
 class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
-  StreamSubscription<LocationData>? _locationListener;
+  StreamSubscription<Position>? _locationListener;
   double? _accuracy;
 
   Future<void> changeAccuracy(LocationAccuracy? value) async {
     widget.settings.accuracy = value?.toString();
+    await _locationListener?.cancel();
+    startListening();
     await widget.settings.save();
-    await widget.location
-        .changeSettings(accuracy: value ?? LocationAccuracy.balanced);
     setState(() {});
+  }
+
+  void startListening() {
+    _locationListener = Geolocator.getPositionStream(
+            desiredAccuracy: widget.settings.getAccuracy())
+        .listen((event) {
+      setState(() {
+        _accuracy = event.accuracy;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (_locationListener == null) {
-      _locationListener = widget.location.onLocationChanged.listen((event) {
-        setState(() {
-          _accuracy = event.accuracy;
-        });
-      });
+      startListening();
     }
     final LocationAccuracy? currentAccuracy = widget.settings.accuracy == null
         ? null

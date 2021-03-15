@@ -1,79 +1,124 @@
-/// Provides the [HomePage] widget.
+// / Provides the [HomePage] widget.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../json/settings.dart';
 import '../util.dart';
 import 'gps_page.dart';
+import 'poi_page.dart';
 import 'save_position.dart';
 import 'set_request_accuracy.dart';
 
-enum MenuItems { gps, savePosition, setRequestedAccuracy }
+enum MainMenuItems { gps, savePosition, setRequestedAccuracy }
 
 class HomePage extends StatefulWidget {
-  final Location location;
   final Settings settings;
 
-  HomePage(this.location, this.settings);
+  HomePage(this.settings);
 
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
+  StreamSubscription<Position>? _locationListener;
+  PointOfInterest? _location;
+
   @override
   Widget build(BuildContext context) {
-    final Widget child = ListView.builder(
-        itemCount: widget.settings.pointsOfInterest.length,
-        itemBuilder: (BuildContext context, int index) {
-          final PointOfInterest poi = widget.settings.pointsOfInterest[index];
-          return ListTile(
-            title: Text(poi.name),
-            subtitle: Text('${poi.latitude}, ${poi.longitude}'),
-          );
-        });
+    Widget child;
+    if (widget.settings.pointsOfInterest.isEmpty) {
+      child = Center(child: Text('No points of interest to show.'));
+    } else if (_locationListener == null || _location == null) {
+      if (_locationListener == null) {
+        _locationListener = Geolocator.getPositionStream(
+                desiredAccuracy: widget.settings.getAccuracy())
+            .listen((Position location) => setState(() {
+                  final double? lat = location.latitude;
+                  final double? lon = location.longitude;
+                  final double? accuracy = location.accuracy;
+                  if (lat != null && lon != null && accuracy != null) {
+                    _location = PointOfInterest(
+                        name: 'Current location',
+                        longitude: lon,
+                        latitude: lat,
+                        accuracy: accuracy);
+                  }
+                }));
+      }
+      child = Center(
+        child: Text('Getting location...'),
+      );
+    } else {
+      child = ListView.builder(
+          itemCount: widget.settings.pointsOfInterest.length,
+          itemBuilder: (BuildContext context, int index) {
+            final PointOfInterest poi = widget.settings.pointsOfInterest[index];
+            final PointOfInterest? location = _location;
+            String directions = 'Loading directions';
+            if (location != null) {
+              directions = location.directionsBetween(poi);
+            }
+            directions = '$directions (${poi.coordinatesString()})';
+            return ListTile(
+              title: Text(poi.name),
+              subtitle: Text(directions),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          PoiPage(widget.settings, poi))),
+            );
+          });
+    }
     return Scaffold(
       appBar: AppBar(
-        leading: PopupMenuButton<MenuItems>(
+        leading: PopupMenuButton<MainMenuItems>(
           icon: Icon(Icons.menu),
-          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuItems>>[
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MainMenuItems>>[
             PopupMenuItem(
               child: Text('Save Current Position'),
-              value: MenuItems.savePosition,
+              value: MainMenuItems.savePosition,
             ),
             PopupMenuItem(
               child: Text('GPS'),
-              value: MenuItems.gps,
+              value: MainMenuItems.gps,
             ),
             PopupMenuItem(
               child: Text(
                   'Set requested accuracy (${enumName(widget.settings.accuracy)})'),
-              value: MenuItems.setRequestedAccuracy,
+              value: MainMenuItems.setRequestedAccuracy,
             )
           ],
-          onSelected: (MenuItems item) {
+          onSelected: (MainMenuItems item) {
             switch (item) {
-              case MenuItems.gps:
+              case MainMenuItems.gps:
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            GpsPage(widget.location, widget.settings)));
+                            GpsPage(widget.settings)));
                 break;
-              case MenuItems.savePosition:
+              case MainMenuItems.savePosition:
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => SavePositionPage(
-                            widget.location, widget.settings)));
+                            widget.settings,
+                            (PointOfInterest poi) => setState(() {
+                                  widget.settings.pointsOfInterest.add(poi);
+                                  widget.settings.save();
+                                }),
+                            true)));
                 break;
-              case MenuItems.setRequestedAccuracy:
+              case MainMenuItems.setRequestedAccuracy:
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            SetRequestAccuracyPage(
-                                widget.location, widget.settings)));
+                            SetRequestAccuracyPage(widget.settings)));
                 break;
             }
           },
@@ -82,5 +127,11 @@ class HomePageState extends State<HomePage> {
       ),
       body: child,
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _locationListener?.cancel();
   }
 }

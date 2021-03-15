@@ -1,11 +1,11 @@
 /// Provides the [GpsPage] page.
 import 'dart:async';
 
-import 'package:crowflight/util.dart';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../json/settings.dart';
+import '../util.dart';
 
 class GpsEntry {
   final String title;
@@ -15,26 +15,26 @@ class GpsEntry {
 }
 
 class GpsPage extends StatefulWidget {
-  final Location location;
   final Settings settings;
 
-  GpsPage(this.location, this.settings);
+  GpsPage(this.settings);
   @override
   GpsPageState createState() => GpsPageState();
 }
 
 class GpsPageState extends State<GpsPage> {
-  StreamSubscription<LocationData>? _locationListener;
-  LocationData? _location;
+  StreamSubscription<Position>? _locationListener;
+  Position? _location;
 
   @override
   Widget build(BuildContext context) {
     Widget child;
-    final StreamSubscription<LocationData>? listener = _locationListener;
-    final LocationData? position = _location;
+    final StreamSubscription<Position>? listener = _locationListener;
+    final Position? position = _location;
     if (listener == null) {
-      _locationListener =
-          widget.location.onLocationChanged.listen((LocationData event) {
+      _locationListener = Geolocator.getPositionStream(
+              desiredAccuracy: widget.settings.getAccuracy())
+          .listen((Position event) {
         setState(() {
           _location = event;
         });
@@ -49,10 +49,11 @@ class GpsPageState extends State<GpsPage> {
       final double? speed = position.speed;
       final double? accuracy = position.accuracy;
       final double? speedAccuracy = position.speedAccuracy;
+      final int? floor = position.floor;
       final List<GpsEntry> entries = <GpsEntry>[
-        GpsEntry('Heading', position.heading?.toStringAsFixed(2) ?? 'Unknown'),
-        GpsEntry('Latitude', position.latitude.toString()),
-        GpsEntry('Longitude', position.longitude.toString()),
+        GpsEntry('Heading', formatBearing(position.heading)),
+        GpsEntry('Latitude', '${position.latitude} °'),
+        GpsEntry('Longitude', '${position.longitude} °'),
         GpsEntry(
             'Altitude',
             (altitude == null)
@@ -61,12 +62,10 @@ class GpsPageState extends State<GpsPage> {
         GpsEntry('Speed',
             speed == null ? 'Unknown' : '${speed.toStringAsFixed(2)} m/s'),
         GpsEntry('Positional Accuracy',
-            accuracy == null ? 'Unknown' : '${accuracy.toStringAsFixed(2)} m'),
-        GpsEntry(
-            'Speed Accuracy',
-            speedAccuracy == null
-                ? 'Unknown'
-                : '${speedAccuracy.toStringAsFixed(2)} m'),
+            accuracy == null ? 'Unknown' : formatDistance(accuracy)),
+        GpsEntry('Speed Accuracy',
+            speedAccuracy == null ? 'Unknown' : formatDistance(speedAccuracy)),
+        GpsEntry('Floor', floor == null ? 'Unknown' : 'Floor $floor}'),
         GpsEntry('Requested Accuracy', enumName(widget.settings.accuracy))
       ];
       child = ListView.builder(

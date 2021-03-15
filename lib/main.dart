@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'json/settings.dart';
 import 'pages/home_page.dart';
@@ -16,18 +16,18 @@ Future<void> main() async {
     home: LoadingPage(appTitle),
   ));
   final Settings settings = await Settings.getInstance();
-  final Location location = Location();
-  final bool serviceEnabled = await location.serviceEnabled();
+  final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (serviceEnabled == false) {
     return runApp(MaterialApp(
       title: appTitle,
       home: ServiceDisabledPage(),
     ));
   }
-  PermissionStatus permissionGranted = await location.hasPermission();
-  if (permissionGranted != PermissionStatus.granted) {
-    permissionGranted = await location.requestPermission();
-    if (permissionGranted != PermissionStatus.granted) {
+  LocationPermission permissionGranted = await Geolocator.checkPermission();
+  if (permissionGranted == LocationPermission.denied ||
+      permissionGranted == LocationPermission.deniedForever) {
+    permissionGranted = await Geolocator.requestPermission();
+    if (permissionGranted == LocationPermission.deniedForever) {
       return runApp(MaterialApp(
         title: appTitle,
         home: LocationDeniedPage(),
@@ -36,7 +36,7 @@ Future<void> main() async {
   }
   runApp(MaterialApp(
     title: appTitle,
-    home: HomePage(location, settings),
+    home: HomePage(settings),
   ));
   await settings.save();
 }
