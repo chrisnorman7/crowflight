@@ -7,11 +7,12 @@ import 'package:geolocator/geolocator.dart';
 import '../json/settings.dart';
 import '../util.dart';
 import 'gps_page.dart';
+import 'navigate_page.dart';
 import 'poi_page.dart';
 import 'save_position.dart';
 import 'set_request_accuracy.dart';
 
-enum MainMenuItems { gps, savePosition, setRequestedAccuracy }
+enum MainMenuItems { savePosition, navigate, gps, setRequestedAccuracy }
 
 class HomePage extends StatefulWidget {
   final Settings settings;
@@ -25,6 +26,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   StreamSubscription<Position>? _locationListener;
   PointOfInterest? _location;
+  double? _heading;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,7 @@ class HomePageState extends State<HomePage> {
         _locationListener = Geolocator.getPositionStream(
                 desiredAccuracy: widget.settings.getAccuracy())
             .listen((Position location) => setState(() {
+                  _heading = location.heading;
                   final double? lat = location.latitude;
                   final double? lon = location.longitude;
                   final double? accuracy = location.accuracy;
@@ -59,7 +62,8 @@ class HomePageState extends State<HomePage> {
             final PointOfInterest? location = _location;
             String directions = 'Loading directions';
             if (location != null) {
-              directions = location.directionsBetween(poi);
+              directions =
+                  location.directionsBetween(poi, initialHeading: _heading);
             }
             directions = '$directions (${poi.coordinatesString()})';
             return ListTile(
@@ -83,12 +87,16 @@ class HomePageState extends State<HomePage> {
               value: MainMenuItems.savePosition,
             ),
             PopupMenuItem(
-              child: Text('GPS'),
+              child: Text('Navigate to Coordinates'),
+              value: MainMenuItems.navigate,
+            ),
+            PopupMenuItem(
+              child: Text('GPS Data'),
               value: MainMenuItems.gps,
             ),
             PopupMenuItem(
               child: Text(
-                  'Set requested accuracy (${enumName(widget.settings.accuracy)})'),
+                  'Change Requested Accuracy (${enumName(widget.settings.accuracy)})'),
               value: MainMenuItems.setRequestedAccuracy,
             )
           ],
@@ -119,6 +127,13 @@ class HomePageState extends State<HomePage> {
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
                             SetRequestAccuracyPage(widget.settings)));
+                break;
+              case MainMenuItems.navigate:
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            NavigatePage(widget.settings)));
                 break;
             }
           },

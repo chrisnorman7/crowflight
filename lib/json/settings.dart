@@ -30,13 +30,17 @@ class PointOfInterest extends GpsCoordinates {
         latitude, longitude, other.latitude, other.longitude);
   }
 
-  double bearingBetween(PointOfInterest other) {
-    return Geolocator.bearingBetween(
+  double bearingBetween(PointOfInterest other, {double? initialHeading}) {
+    final double bearing = Geolocator.bearingBetween(
         latitude, longitude, other.latitude, other.longitude);
+    if (initialHeading == null) {
+      return bearing;
+    }
+    return (initialHeading + bearing) % 360;
   }
 
-  String directionsBetween(PointOfInterest other) {
-    return '${formatDistance(distanceBetween(other))} ${formatBearing(bearingBetween(other))}';
+  String directionsBetween(PointOfInterest other, {double? initialHeading}) {
+    return '${formatDistance(distanceBetween(other))} ${formatBearing(bearingBetween(other, initialHeading: initialHeading))}';
   }
 
   String coordinatesString() {

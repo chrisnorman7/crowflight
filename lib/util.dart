@@ -30,6 +30,12 @@ String? doubleValidator(String? value) {
   }
 }
 
+String? nameValidator(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'You must supply a name.';
+  }
+}
+
 String formatBearing(double angle) {
   const List<String> directions = <String>[
     'north',

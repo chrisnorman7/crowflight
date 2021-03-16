@@ -66,9 +66,7 @@ class SavePositionPageState extends State<SavePositionPage> {
                 title: TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(labelText: 'Name'),
-                  validator: (String? value) => value == null || value.isEmpty
-                      ? 'You must supply a name'
-                      : null,
+                  validator: nameValidator,
                 ),
               ),
               ListTile(

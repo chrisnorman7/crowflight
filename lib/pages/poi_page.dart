@@ -20,19 +20,23 @@ class PoiPage extends StatefulWidget {
 class PoiPageState extends State<PoiPage> {
   StreamSubscription<Position>? _locationListener;
   PointOfInterest? _location;
+  double? _heading;
 
   @override
   Widget build(BuildContext context) {
-    String text;
+    Widget child;
     final PointOfInterest? location = _location;
     double accuracy = (location?.accuracy ?? 0.0) + widget.poi.accuracy;
     if (_locationListener == null || location == null) {
-      text = 'Getting current location...';
+      child = Center(
+        child: Text('Getting current location...'),
+      );
       if (_locationListener == null) {
         _locationListener = Geolocator.getPositionStream(
                 desiredAccuracy: widget.settings.getAccuracy())
             .listen((event) {
           setState(() {
+            _heading = event.heading;
             final PointOfInterest poi = PointOfInterest(
                 name: 'Current location',
                 latitude: event.latitude,
@@ -46,20 +50,36 @@ class PoiPageState extends State<PoiPage> {
         });
       }
     } else if (location.distanceBetween(widget.poi) <= accuracy) {
-      text = 'Within ${formatDistance(accuracy)}';
+      child = Center(
+        child: Semantics(
+          liveRegion: true,
+          child: Text('Within ${formatDistance(accuracy)}'),
+        ),
+      );
     } else {
-      text = location.directionsBetween(widget.poi);
+      final double? heading = _heading;
+      child = ListView(
+        children: [
+          ListTile(
+            title: Text('Directions'),
+            subtitle: Semantics(
+              liveRegion: true,
+              child: Text(location.directionsBetween(widget.poi)),
+            ),
+          ),
+          ListTile(
+            title: Text('Heading'),
+            subtitle:
+                Text(heading == null ? 'Unknown' : formatBearing(heading)),
+          )
+        ],
+      );
     }
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.poi.name),
       ),
-      body: Center(
-        child: Semantics(
-          liveRegion: true,
-          child: Text(text),
-        ),
-      ),
+      body: child,
     );
   }
 
