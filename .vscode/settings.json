@@ -4,7 +4,9 @@
     "Trajan",
     "analyzer",
     "crowflight",
-    "haversine"
+    "geolocator",
+    "haversine",
+    "nullsafety"
   ],
   "[dart]": {
     "editor.tabSize": 2,

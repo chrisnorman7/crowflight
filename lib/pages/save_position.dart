@@ -21,11 +21,11 @@ class SavePositionPage extends StatefulWidget {
 }
 
 class SavePositionPageState extends State<SavePositionPage> {
-  StreamSubscription<Position>? _locationListener;
-  GpsCoordinates? _position;
-
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+
+  StreamSubscription<Position>? _locationListener;
+  GpsCoordinates? _position;
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +94,12 @@ class SavePositionPageState extends State<SavePositionPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Save Current Position'),
+        title: Text('Save POI'),
         actions: [
           IconButton(
               icon: Icon(Icons.save),
               tooltip: 'Save',
-              onPressed: coords == null
+              onPressed: coords == null && widget.poi == null
                   ? null
                   : () {
                       final GpsCoordinates? coords = _position;

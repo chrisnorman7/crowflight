@@ -3,9 +3,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:share/share.dart';
 
 import '../json/settings.dart';
 import '../util.dart';
+import 'save_position.dart';
+
+enum PoiMenuItems { rename, delete }
 
 class PoiPage extends StatefulWidget {
   final Settings settings;
@@ -76,9 +80,55 @@ class PoiPageState extends State<PoiPage> {
       );
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.poi.name),
-      ),
+      appBar: AppBar(title: Text(widget.poi.name), actions: [
+        IconButton(
+            tooltip: 'Share',
+            icon: Icon(Icons.share),
+            onPressed: () => Share.share(
+                '${widget.poi.name}:\n\nLatitude: ${widget.poi.latitude}\nLongitude: ${widget.poi.longitude}\nAccuracy: ${formatDistance(widget.poi.accuracy)}',
+                subject: 'Point of Interest')),
+        widget.settings.pointsOfInterest.contains(widget.poi)
+            ? PopupMenuButton<PoiMenuItems>(
+                tooltip: 'Edit POI',
+                icon: Icon(Icons.edit),
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    child: Text('Rename'),
+                    value: PoiMenuItems.rename,
+                  ),
+                  PopupMenuItem(
+                    child: Text('Delete'),
+                    value: PoiMenuItems.delete,
+                  )
+                ],
+                onSelected: (PoiMenuItems value) {
+                  switch (value) {
+                    case PoiMenuItems.rename:
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  SavePositionPage(
+                                    widget.settings,
+                                    (PointOfInterest poi) => setState(() {}),
+                                    false,
+                                    poi: widget.poi,
+                                  )));
+                      break;
+                    case PoiMenuItems.delete:
+                      print('Delete.');
+                      break;
+                  }
+                },
+              )
+            : IconButton(
+                icon: Icon(Icons.save),
+                tooltip: 'Save POI',
+                onPressed: () => setState(() {
+                      widget.settings.pointsOfInterest.add(widget.poi);
+                      widget.settings.save();
+                    }))
+      ]),
       body: child,
     );
   }
