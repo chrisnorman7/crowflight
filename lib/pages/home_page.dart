@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:share/share.dart';
 
 import '../json/settings.dart';
 import '../util.dart';
@@ -77,6 +78,7 @@ class HomePageState extends State<HomePage> {
             );
           });
     }
+    final PointOfInterest? location = _location;
     return Scaffold(
       appBar: AppBar(
         leading: PopupMenuButton<MainMenuItems>(
@@ -139,6 +141,15 @@ class HomePageState extends State<HomePage> {
           },
         ),
         title: Text('Points of Interest'),
+        actions: [
+          IconButton(
+              tooltip: 'Share',
+              icon: Icon(Icons.share),
+              onPressed: location == null
+                  ? null
+                  : () => Share.share(
+                      'I am currently located within ${formatDistance(location.accuracy)} of ${location.latitude} ° latitude, ${location.longitude} ° longitude.'))
+        ],
       ),
       body: child,
     );

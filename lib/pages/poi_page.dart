@@ -85,7 +85,7 @@ class PoiPageState extends State<PoiPage> {
             tooltip: 'Share',
             icon: Icon(Icons.share),
             onPressed: () => Share.share(
-                '${widget.poi.name}:\n\nLatitude: ${widget.poi.latitude}\nLongitude: ${widget.poi.longitude}\nAccuracy: ${formatDistance(widget.poi.accuracy)}',
+                "I've saved the coordinates for ${widget.poi.name}.\n\nLatitude: ${widget.poi.latitude} °\nLongitude: ${widget.poi.longitude} °\n\nThese coordinates are accurate to within ${formatDistance(widget.poi.accuracy)}.",
                 subject: 'Point of Interest')),
         widget.settings.pointsOfInterest.contains(widget.poi)
             ? PopupMenuButton<PoiMenuItems>(
