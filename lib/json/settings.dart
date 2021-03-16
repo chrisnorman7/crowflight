@@ -1,5 +1,4 @@
 // / Provides the [Settings] class.
-
 import 'dart:convert';
 
 import 'package:crowflight/util.dart';
