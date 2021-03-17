@@ -48,7 +48,7 @@ class PoiPageState extends State<PoiPage> {
                         oldPosition.latitude,
                         oldPosition.longitude,
                         position.latitude,
-                        position.longitude) <=
+                        position.longitude) >=
                     position.accuracy) {
               _position = position;
             }
@@ -56,19 +56,16 @@ class PoiPageState extends State<PoiPage> {
         });
       }
     } else {
-      final PointOfInterest location = PointOfInterest(
-          name: 'Current Location',
-          latitude: position.latitude,
-          longitude: position.longitude,
-          accuracy: position.accuracy);
+      final PointOfInterest location = PointOfInterest.fromPosition(position);
+      final double? distance = location.distanceBetween(widget.poi);
       child = ListView(children: [
         ListTile(
           title: Text('Directions'),
           subtitle: Semantics(
             liveRegion: true,
-            child: Text(location.distanceBetween(widget.poi) <= accuracy
+            child: Text(distance == null || distance <= accuracy
                 ? 'Here'
-                : location.directionsBetween(widget.poi)),
+                : location.directionsBetween(widget.poi, position.heading)),
           ),
         ),
         ListTile(

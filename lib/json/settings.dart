@@ -1,6 +1,5 @@
 // / Provides the [Settings] class.
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:crowflight/util.dart';
 import 'package:geolocator/geolocator.dart';
@@ -26,26 +25,34 @@ class PointOfInterest extends GpsCoordinates {
       _$PointOfInterestFromJson(json);
   Map<String, dynamic> toJson() => _$PointOfInterestToJson(this);
 
-  double distanceBetween(PointOfInterest other) {
-    return max(
-        0,
-        Geolocator.distanceBetween(
-                latitude, longitude, other.latitude, other.longitude) -
-            accuracy -
-            other.accuracy);
+  factory PointOfInterest.fromPosition(Position position,
+          {String name = 'Current location'}) =>
+      PointOfInterest(
+          name: name,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          accuracy: position.accuracy);
+
+  double? distanceBetween(PointOfInterest other) {
+    final double distance = Geolocator.distanceBetween(
+        latitude, longitude, other.latitude, other.longitude);
+    if (distance > accuracy) {
+      return distance - accuracy;
+    }
   }
 
-  double bearingBetween(PointOfInterest other, {double? initialHeading}) {
+  double bearingBetween(PointOfInterest other, double initialHeading) {
     final double bearing = Geolocator.bearingBetween(
         latitude, longitude, other.latitude, other.longitude);
-    if (initialHeading == null) {
-      return bearing;
-    }
-    return (initialHeading + bearing) % 360;
+    return (bearing - initialHeading) % 360;
   }
 
-  String directionsBetween(PointOfInterest other, {double? initialHeading}) {
-    return '${formatDistance(distanceBetween(other))} ${formatBearing(bearingBetween(other, initialHeading: initialHeading))}';
+  String directionsBetween(PointOfInterest other, double initialHeading) {
+    final double? distance = distanceBetween(other);
+    if (distance == null) {
+      return 'here';
+    }
+    return '${formatDistance(distance)} ${formatBearing(bearingBetween(other, initialHeading))}';
   }
 
   String coordinatesString() {

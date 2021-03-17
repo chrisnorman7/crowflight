@@ -26,15 +26,15 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   StreamSubscription<Position>? _locationListener;
-  PointOfInterest? _location;
-  double? _heading;
+  Position? _position;
 
   @override
   Widget build(BuildContext context) {
     Widget child;
+    final Position? position = _position;
     if (widget.settings.pointsOfInterest.isEmpty) {
       child = Center(child: Text('No points of interest to show.'));
-    } else if (_locationListener == null || _location == null) {
+    } else if (_locationListener == null || position == null) {
       if (_locationListener == null) {
         trackLocation();
       }
@@ -46,15 +46,12 @@ class HomePageState extends State<HomePage> {
           itemCount: widget.settings.pointsOfInterest.length,
           itemBuilder: (BuildContext context, int index) {
             final PointOfInterest poi = widget.settings.pointsOfInterest[index];
-            final PointOfInterest? location = _location;
+            final Position? position = _position;
             String directions = 'Loading directions';
-            if (location != null) {
-              if (location.distanceBetween(poi) == 0.0) {
-                directions = 'Here';
-              } else {
-                directions =
-                    location.directionsBetween(poi, initialHeading: _heading);
-              }
+            if (position != null) {
+              final PointOfInterest location =
+                  PointOfInterest.fromPosition(position);
+              directions = location.directionsBetween(poi, position.heading);
             }
             directions = '$directions (${poi.coordinatesString()})';
             return ListTile(
@@ -68,7 +65,6 @@ class HomePageState extends State<HomePage> {
             );
           });
     }
-    final PointOfInterest? location = _location;
     return Scaffold(
       appBar: AppBar(
         leading: PopupMenuButton<MainMenuItems>(
@@ -139,10 +135,10 @@ class HomePageState extends State<HomePage> {
           IconButton(
               tooltip: 'Share',
               icon: Icon(Icons.share),
-              onPressed: location == null
+              onPressed: position == null
                   ? null
                   : () => Share.share(
-                      'I am currently located within ${formatDistance(location.accuracy)} of ${location.latitude} ° latitude, ${location.longitude} ° longitude.'))
+                      'I am currently located within ${formatDistance(position.accuracy)} of ${position.latitude} ° latitude, ${position.longitude} ° longitude.'))
         ],
       ),
       body: child,
@@ -158,18 +154,6 @@ class HomePageState extends State<HomePage> {
   void trackLocation() {
     _locationListener = Geolocator.getPositionStream(
             desiredAccuracy: widget.settings.getAccuracy())
-        .listen((Position location) => setState(() {
-              _heading = location.heading;
-              final double? lat = location.latitude;
-              final double? lon = location.longitude;
-              final double? accuracy = location.accuracy;
-              if (lat != null && lon != null && accuracy != null) {
-                _location = PointOfInterest(
-                    name: 'Current location',
-                    longitude: lon,
-                    latitude: lat,
-                    accuracy: accuracy);
-              }
-            }));
+        .listen((position) => setState(() => _position = position));
   }
 }

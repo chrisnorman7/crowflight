@@ -22,3 +22,4 @@ doc/api/
 key.properties
 .idea
 .flutter-plugins-dependencies
+.flutter-plugins

@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../gps_coordinates.dart';
 import '../json/settings.dart';
 import '../util.dart';
 
@@ -34,22 +33,22 @@ class SavePositionPageState extends State<SavePositionPage> {
   }
 
   StreamSubscription<Position>? _locationListener;
-  GpsCoordinates? _position;
+  Position? _position;
 
   @override
   Widget build(BuildContext context) {
-    GpsCoordinates? coords = _position;
+    Position? coords = _position;
     final PointOfInterest? poi = widget.poi;
     Widget child;
     if (_locationListener == null && widget.includeCoordinates) {
       _locationListener = Geolocator.getPositionStream(
               desiredAccuracy: widget.settings.getAccuracy())
-          .listen((event) {
+          .listen((position) {
         setState(() {
-          final GpsCoordinates? coords = _position;
-          if (coords == null || event.accuracy <= coords.accuracy) {
-            _position = GpsCoordinates.create(
-                event.latitude, event.longitude, event.accuracy);
+          final Position? oldPosition = _position;
+          if (oldPosition == null ||
+              position.accuracy <= oldPosition.accuracy) {
+            _position = position;
           }
         });
       });
@@ -63,8 +62,15 @@ class SavePositionPageState extends State<SavePositionPage> {
             child: Text('Gathering coordinates...'),
           );
         } else if (poi != null) {
-          coords =
-              GpsCoordinates.create(poi.latitude, poi.longitude, poi.accuracy);
+          coords = Position(
+              longitude: poi.longitude,
+              latitude: poi.latitude,
+              timestamp: DateTime.now().toUtc(),
+              accuracy: poi.accuracy,
+              altitude: 0.0,
+              heading: 0.0,
+              speed: 0.0,
+              speedAccuracy: 0.0);
         }
       }
       child = Form(
@@ -111,24 +117,28 @@ class SavePositionPageState extends State<SavePositionPage> {
               onPressed: coords == null && poi == null
                   ? null
                   : () {
-                      GpsCoordinates? coords = _position;
+                      Position? coords = _position;
                       PointOfInterest? poi = widget.poi;
                       final PointOfInterest? oldPoi = poi;
                       if (coords == null) {
                         if (poi != null) {
-                          coords = GpsCoordinates.create(
-                              poi.latitude, poi.longitude, poi.accuracy);
+                          coords = Position(
+                              longitude: poi.longitude,
+                              latitude: poi.latitude,
+                              timestamp: DateTime.now().toUtc(),
+                              accuracy: poi.accuracy,
+                              altitude: 0.0,
+                              heading: 0.0,
+                              speed: 0.0,
+                              speedAccuracy: 0.0);
                         } else {
                           throw ('Cannot create poi, when [widget.poi] is null and [widget.includeCoordinates] is false.');
                         }
                       }
                       if (_formState.currentState?.validate() == true) {
                         if (poi == null) {
-                          poi = PointOfInterest(
-                              name: _nameController.text,
-                              latitude: coords.latitude,
-                              longitude: coords.longitude,
-                              accuracy: coords.accuracy);
+                          poi = PointOfInterest.fromPosition(coords,
+                              name: _nameController.text);
                         } else {
                           poi.name = _nameController.text;
                         }
