@@ -29,11 +29,11 @@ class PoiPageState extends State<PoiPage> {
   Widget build(BuildContext context) {
     Widget child;
     final Position? position = _position;
-    double? accuracy = position?.accuracy;
-    if (accuracy != null) {
-      accuracy += widget.poi.accuracy;
+    double accuracy = widget.poi.accuracy;
+    if (position != null) {
+      accuracy += position.accuracy;
     }
-    if (accuracy == null || _locationListener == null || position == null) {
+    if (_locationListener == null || position == null) {
       child = Center(
         child: Text('Getting current location...'),
       );
@@ -67,7 +67,7 @@ class PoiPageState extends State<PoiPage> {
           subtitle: Semantics(
             liveRegion: true,
             child: Text(location.distanceBetween(widget.poi) <= accuracy
-                ? 'Within ${formatDistance(accuracy)}'
+                ? 'Here'
                 : location.directionsBetween(widget.poi)),
           ),
         ),
@@ -82,6 +82,10 @@ class PoiPageState extends State<PoiPage> {
         ListTile(
           title: Text('Longitude'),
           subtitle: Text(location.longitude.toString()),
+        ),
+        ListTile(
+          title: Text('Speed'),
+          subtitle: Text('${formatDistance(position.speed)}/s'),
         ),
         ListTile(
           title: Text('GPS Accuracy'),

@@ -1,5 +1,6 @@
 // / Provides the [Settings] class.
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crowflight/util.dart';
 import 'package:geolocator/geolocator.dart';
@@ -26,8 +27,12 @@ class PointOfInterest extends GpsCoordinates {
   Map<String, dynamic> toJson() => _$PointOfInterestToJson(this);
 
   double distanceBetween(PointOfInterest other) {
-    return Geolocator.distanceBetween(
-        latitude, longitude, other.latitude, other.longitude);
+    return max(
+        0,
+        Geolocator.distanceBetween(
+                latitude, longitude, other.latitude, other.longitude) -
+            accuracy -
+            other.accuracy);
   }
 
   double bearingBetween(PointOfInterest other, {double? initialHeading}) {

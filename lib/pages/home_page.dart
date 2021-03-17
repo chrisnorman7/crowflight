@@ -49,8 +49,12 @@ class HomePageState extends State<HomePage> {
             final PointOfInterest? location = _location;
             String directions = 'Loading directions';
             if (location != null) {
-              directions =
-                  location.directionsBetween(poi, initialHeading: _heading);
+              if (location.distanceBetween(poi) == 0.0) {
+                directions = 'Here';
+              } else {
+                directions =
+                    location.directionsBetween(poi, initialHeading: _heading);
+              }
             }
             directions = '$directions (${poi.coordinatesString()})';
             return ListTile(
