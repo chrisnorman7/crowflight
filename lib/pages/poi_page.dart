@@ -23,61 +23,85 @@ class PoiPage extends StatefulWidget {
 
 class PoiPageState extends State<PoiPage> {
   StreamSubscription<Position>? _locationListener;
-  PointOfInterest? _location;
-  double? _heading;
+  Position? _position;
 
   @override
   Widget build(BuildContext context) {
     Widget child;
-    final PointOfInterest? location = _location;
-    double accuracy = (location?.accuracy ?? 0.0) + widget.poi.accuracy;
-    if (_locationListener == null || location == null) {
+    final Position? position = _position;
+    double? accuracy = position?.accuracy;
+    if (accuracy != null) {
+      accuracy += widget.poi.accuracy;
+    }
+    if (accuracy == null || _locationListener == null || position == null) {
       child = Center(
         child: Text('Getting current location...'),
       );
       if (_locationListener == null) {
         _locationListener = Geolocator.getPositionStream(
                 desiredAccuracy: widget.settings.getAccuracy())
-            .listen((event) {
+            .listen((position) {
           setState(() {
-            _heading = event.heading;
-            final PointOfInterest poi = PointOfInterest(
-                name: 'Current location',
-                latitude: event.latitude,
-                longitude: event.longitude,
-                accuracy: event.accuracy);
-            final PointOfInterest? location = _location;
-            if (location == null || location.distanceBetween(poi) <= 2.0) {
-              _location = poi;
+            final Position? oldPosition = _position;
+            if (oldPosition == null ||
+                Geolocator.distanceBetween(
+                        oldPosition.latitude,
+                        oldPosition.longitude,
+                        position.latitude,
+                        position.longitude) <=
+                    position.accuracy) {
+              _position = position;
             }
           });
         });
       }
-    } else if (location.distanceBetween(widget.poi) <= accuracy) {
-      child = Center(
-        child: Semantics(
-          liveRegion: true,
-          child: Text('Within ${formatDistance(accuracy)}'),
-        ),
-      );
     } else {
-      final double? heading = _heading;
-      child = ListView(
-        children: [
-          ListTile(
-            title: Text('Directions'),
-            subtitle: Semantics(
-              liveRegion: true,
-              child: Text(location.directionsBetween(widget.poi)),
-            ),
+      final PointOfInterest location = PointOfInterest(
+          name: 'Current Location',
+          latitude: position.latitude,
+          longitude: position.longitude,
+          accuracy: position.accuracy);
+      child = ListView(children: [
+        ListTile(
+          title: Text('Directions'),
+          subtitle: Semantics(
+            liveRegion: true,
+            child: Text(location.distanceBetween(widget.poi) <= accuracy
+                ? 'Within ${formatDistance(accuracy)}'
+                : location.directionsBetween(widget.poi)),
           ),
-          ListTile(
-            title: Text('Heading'),
-            subtitle:
-                Text(heading == null ? 'Unknown' : formatBearing(heading)),
-          )
-        ],
-      );
+        ),
+        ListTile(
+          title: Text('Heading'),
+          subtitle: Text(formatBearing(position.heading)),
+        ),
+        ListTile(
+          title: Text('Latitude'),
+          subtitle: Text(location.latitude.toString()),
+        ),
+        ListTile(
+          title: Text('Longitude'),
+          subtitle: Text(location.longitude.toString()),
+        ),
+        ListTile(
+          title: Text('GPS Accuracy'),
+          subtitle: Text(formatDistance(location.accuracy)),
+        ),
+        ListTile(
+          title: Text('Altitude'),
+          subtitle:
+              Text('${formatDistance(position.altitude)} above sea level'),
+        ),
+        ListTile(
+          title: Text('Apparent Storey'),
+          subtitle: Text(
+              position.floor == null ? 'Unknown' : 'Level ${position.floor}'),
+        ),
+        ListTile(
+          title: Text('POI Accuracy'),
+          subtitle: Text(formatDistance(widget.poi.accuracy)),
+        ),
+      ]);
     }
     return Scaffold(
       appBar: AppBar(title: Text(widget.poi.name), actions: [
@@ -116,7 +140,11 @@ class PoiPageState extends State<PoiPage> {
                                   )));
                       break;
                     case PoiMenuItems.delete:
-                      print('Delete.');
+                      if (widget.settings.pointsOfInterest
+                          .contains(widget.poi)) {
+                        setState(() => widget.settings.pointsOfInterest
+                            .remove(widget.poi));
+                      }
                       break;
                   }
                 },

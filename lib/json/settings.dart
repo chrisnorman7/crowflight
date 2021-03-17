@@ -12,7 +12,7 @@ part 'settings.g.dart';
 
 @JsonSerializable()
 class PointOfInterest extends GpsCoordinates {
-  final String name;
+  String name;
 
   PointOfInterest(
       {required this.name,

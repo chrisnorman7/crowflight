@@ -24,6 +24,15 @@ class SavePositionPageState extends State<SavePositionPage> {
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    final PointOfInterest? poi = widget.poi;
+    if (poi != null) {
+      _nameController.text = poi.name;
+    }
+  }
+
   StreamSubscription<Position>? _locationListener;
   GpsCoordinates? _position;
 
@@ -99,17 +108,34 @@ class SavePositionPageState extends State<SavePositionPage> {
           IconButton(
               icon: Icon(Icons.save),
               tooltip: 'Save',
-              onPressed: coords == null && widget.poi == null
+              onPressed: coords == null && poi == null
                   ? null
                   : () {
-                      final GpsCoordinates? coords = _position;
-                      if (coords != null &&
-                          _formState.currentState?.validate() == true) {
-                        final PointOfInterest poi = PointOfInterest(
-                            name: _nameController.text,
-                            latitude: coords.latitude,
-                            longitude: coords.longitude,
-                            accuracy: coords.accuracy);
+                      GpsCoordinates? coords = _position;
+                      PointOfInterest? poi = widget.poi;
+                      final PointOfInterest? oldPoi = poi;
+                      if (coords == null) {
+                        if (poi != null) {
+                          coords = GpsCoordinates.create(
+                              poi.latitude, poi.longitude, poi.accuracy);
+                        } else {
+                          throw ('Cannot create poi, when [widget.poi] is null and [widget.includeCoordinates] is false.');
+                        }
+                      }
+                      if (_formState.currentState?.validate() == true) {
+                        if (poi == null) {
+                          poi = PointOfInterest(
+                              name: _nameController.text,
+                              latitude: coords.latitude,
+                              longitude: coords.longitude,
+                              accuracy: coords.accuracy);
+                        } else {
+                          poi.name = _nameController.text;
+                        }
+                        if (widget.settings.pointsOfInterest.contains(oldPoi)) {
+                          widget.settings.pointsOfInterest.remove(oldPoi);
+                          widget.settings.pointsOfInterest.add(poi);
+                        }
                         widget.onSave(poi);
                         Navigator.pop(context);
                       }
