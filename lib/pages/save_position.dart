@@ -106,8 +106,8 @@ class SavePositionPageState extends State<SavePositionPage> {
         title: Text('Save POI'),
         actions: [
           IconButton(
-              icon: Icon(Icons.save),
               tooltip: 'Save',
+              icon: Icon(Icons.save),
               onPressed: coords == null && poi == null
                   ? null
                   : () {

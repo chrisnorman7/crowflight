@@ -153,7 +153,6 @@ class PoiPageState extends State<PoiPage> {
               )
             : IconButton(
                 icon: Icon(Icons.save),
-                tooltip: 'Save POI',
                 onPressed: () => setState(() {
                       widget.settings.pointsOfInterest.add(widget.poi);
                       widget.settings.save();

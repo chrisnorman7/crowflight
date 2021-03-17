@@ -9,8 +9,9 @@ import '../json/settings.dart';
 
 class SetRequestAccuracyPage extends StatefulWidget {
   final Settings settings;
+  final Function(LocationAccuracy?) onChange;
 
-  SetRequestAccuracyPage(this.settings);
+  SetRequestAccuracyPage(this.settings, this.onChange);
 
   @override
   SetRequestAccuracyPageState createState() => SetRequestAccuracyPageState();
@@ -23,12 +24,13 @@ class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
   Future<void> changeAccuracy(LocationAccuracy? value) async {
     widget.settings.accuracy = value?.toString();
     await _locationListener?.cancel();
-    startListening();
+    trackLocation();
     await widget.settings.save();
+    widget.onChange(value);
     setState(() {});
   }
 
-  void startListening() {
+  void trackLocation() {
     _locationListener = Geolocator.getPositionStream(
             desiredAccuracy: widget.settings.getAccuracy())
         .listen((event) {
@@ -41,7 +43,7 @@ class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
   @override
   Widget build(BuildContext context) {
     if (_locationListener == null) {
-      startListening();
+      trackLocation();
     }
     final LocationAccuracy? currentAccuracy = widget.settings.accuracy == null
         ? null
@@ -67,13 +69,11 @@ class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
             }
             index -= 1;
             final LocationAccuracy? accuracy = menuItems[index];
-            return ListTile(
+            return RadioListTile<LocationAccuracy?>(
               title: Text(enumName(accuracy?.toString())),
-              subtitle: Radio<LocationAccuracy?>(
-                groupValue: currentAccuracy,
-                value: accuracy,
-                onChanged: changeAccuracy,
-              ),
+              groupValue: currentAccuracy,
+              value: accuracy,
+              onChanged: changeAccuracy,
             );
           },
           itemCount: menuItems.length + 1,

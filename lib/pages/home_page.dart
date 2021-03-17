@@ -36,21 +36,7 @@ class HomePageState extends State<HomePage> {
       child = Center(child: Text('No points of interest to show.'));
     } else if (_locationListener == null || _location == null) {
       if (_locationListener == null) {
-        _locationListener = Geolocator.getPositionStream(
-                desiredAccuracy: widget.settings.getAccuracy())
-            .listen((Position location) => setState(() {
-                  _heading = location.heading;
-                  final double? lat = location.latitude;
-                  final double? lon = location.longitude;
-                  final double? accuracy = location.accuracy;
-                  if (lat != null && lon != null && accuracy != null) {
-                    _location = PointOfInterest(
-                        name: 'Current location',
-                        longitude: lon,
-                        latitude: lat,
-                        accuracy: accuracy);
-                  }
-                }));
+        trackLocation();
       }
       child = Center(
         child: Text('Getting location...'),
@@ -128,7 +114,11 @@ class HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            SetRequestAccuracyPage(widget.settings)));
+                            SetRequestAccuracyPage(widget.settings,
+                                (LocationAccuracy? accuracy) async {
+                              await _locationListener?.cancel();
+                              trackLocation();
+                            })));
                 break;
               case MainMenuItems.navigate:
                 Navigator.push(
@@ -159,5 +149,23 @@ class HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     _locationListener?.cancel();
+  }
+
+  void trackLocation() {
+    _locationListener = Geolocator.getPositionStream(
+            desiredAccuracy: widget.settings.getAccuracy())
+        .listen((Position location) => setState(() {
+              _heading = location.heading;
+              final double? lat = location.latitude;
+              final double? lon = location.longitude;
+              final double? accuracy = location.accuracy;
+              if (lat != null && lon != null && accuracy != null) {
+                _location = PointOfInterest(
+                    name: 'Current location',
+                    longitude: lon,
+                    latitude: lat,
+                    accuracy: accuracy);
+              }
+            }));
   }
 }
