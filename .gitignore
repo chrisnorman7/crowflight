@@ -21,3 +21,4 @@ doc/api/
 *.js.map
 key.properties
 .idea
+.flutter-plugins-dependencies
