@@ -4,6 +4,7 @@ String formatDistance(double dist) {
   String unit;
   if (dist >= 1000) {
     unit = 'km';
+    dist /= 1000;
   } else {
     unit = 'm';
   }
