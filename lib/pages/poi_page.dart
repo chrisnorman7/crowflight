@@ -142,8 +142,10 @@ class PoiPageState extends State<PoiPage> {
                     case PoiMenuItems.delete:
                       if (widget.settings.pointsOfInterest
                           .contains(widget.poi)) {
-                        setState(() => widget.settings.pointsOfInterest
-                            .remove(widget.poi));
+                        setState(() {
+                          widget.settings.pointsOfInterest.remove(widget.poi);
+                          widget.settings.save();
+                        });
                       }
                       break;
                   }
