@@ -1,26 +1,33 @@
 /// Provides the [SetRequestAccuracyPage] page.
 import 'dart:async';
 
-import 'package:crowflight/util.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../json/settings.dart';
+import '../util.dart';
 
+/// A page for setting the requested GPS accuracy.
 class SetRequestAccuracyPage extends StatefulWidget {
-  final Settings settings;
-  final Function(LocationAccuracy?) onChange;
+  /// Create the page.
+  const SetRequestAccuracyPage(this.settings, this.onChange);
 
-  SetRequestAccuracyPage(this.settings, this.onChange);
+  /// Application settings.
+  final Settings settings;
+
+  /// A function to be called when the requested accuracy changes.
+  final Function(LocationAccuracy?) onChange;
 
   @override
   SetRequestAccuracyPageState createState() => SetRequestAccuracyPageState();
 }
 
+/// A page for setting the requested GPS accuracy.
 class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
   StreamSubscription<Position>? _locationListener;
   double? _accuracy;
 
+  /// Change the requested accuracy.
   Future<void> changeAccuracy(LocationAccuracy? value) async {
     widget.settings.accuracy = value?.toString();
     await _locationListener?.cancel();
@@ -30,6 +37,7 @@ class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
     setState(() {});
   }
 
+  /// Start listening for location changes.
   void trackLocation() {
     _locationListener = Geolocator.getPositionStream(
             desiredAccuracy: widget.settings.getAccuracy())
@@ -49,8 +57,8 @@ class SetRequestAccuracyPageState extends State<SetRequestAccuracyPage> {
         ? null
         : LocationAccuracy.values.firstWhere(
             (element) => element.toString() == widget.settings.accuracy);
-    final List<LocationAccuracy?> menuItems = [null];
-    menuItems.addAll(LocationAccuracy.values);
+    final List<LocationAccuracy?> menuItems = [null]
+      ..addAll(LocationAccuracy.values);
     return Scaffold(
         appBar: AppBar(
           title: Text('Set Requested GPS Accuracy'),

@@ -7,21 +7,30 @@ import 'package:geolocator/geolocator.dart';
 import '../json/settings.dart';
 import '../util.dart';
 
+/// A piece of GPS information.
 class GpsEntry {
-  final String title;
-  final String value;
-
+  /// Create an entry.
   GpsEntry(this.title, this.value);
+
+  /// The title of the entry.
+  final String title;
+
+  /// The value of the entry.
+  final String value;
 }
 
+/// A page for showing GPS data.
 class GpsPage extends StatefulWidget {
-  final Settings settings;
+  /// Create a page.
+  const GpsPage(this.settings);
 
-  GpsPage(this.settings);
+  /// Application settings.
+  final Settings settings;
   @override
   GpsPageState createState() => GpsPageState();
 }
 
+/// The state for [GpsPage].
 class GpsPageState extends State<GpsPage> {
   StreamSubscription<Position>? _locationListener;
   Position? _location;

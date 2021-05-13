@@ -7,18 +7,29 @@ import 'package:geolocator/geolocator.dart';
 import '../json/settings.dart';
 import '../util.dart';
 
+/// A page for saving the current position.
 class SavePositionPage extends StatefulWidget {
-  final Settings settings;
-  final void Function(PointOfInterest) onSave;
-  final PointOfInterest? poi;
-  final bool includeCoordinates;
-
-  SavePositionPage(this.settings, this.onSave, this.includeCoordinates,
+  /// Create the page.
+  const SavePositionPage(this.settings, this.onSave, this.includeCoordinates,
       {this.poi});
 
+  /// Application settings.
+  final Settings settings;
+
+  /// A function to be called when the POI is saved.
+  final void Function(PointOfInterest) onSave;
+
+  /// An optional POI to edit.
+  final PointOfInterest? poi;
+
+  /// If `true`, it will be possible to edit the coordinates for the POI.
+  final bool includeCoordinates;
+
+  @override
   SavePositionPageState createState() => SavePositionPageState();
 }
 
+/// State for [SavePositionPage].
 class SavePositionPageState extends State<SavePositionPage> {
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
@@ -132,7 +143,9 @@ class SavePositionPageState extends State<SavePositionPage> {
                               speed: 0.0,
                               speedAccuracy: 0.0);
                         } else {
-                          throw ('Cannot create poi, when [widget.poi] is null and [widget.includeCoordinates] is false.');
+                          throw Exception(
+                              'Cannot create poi, when [widget.poi] is null ' +
+                                  'and [widget.includeCoordinates] is false.');
                         }
                       }
                       if (_formState.currentState?.validate() == true) {

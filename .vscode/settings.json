@@ -4,6 +4,7 @@
     "Trajan",
     "analyzer",
     "crowflight",
+    "formals",
     "geolocator",
     "haversine",
     "nullsafety"

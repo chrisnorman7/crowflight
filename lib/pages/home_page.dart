@@ -13,17 +13,36 @@ import 'poi_page.dart';
 import 'save_position.dart';
 import 'set_request_accuracy.dart';
 
-enum MainMenuItems { savePosition, navigate, gps, setRequestedAccuracy }
+/// Entries in the main menu.
+enum MainMenuItems {
+  /// Save the current position.
+  savePosition,
 
+  /// Navigate to some specific coordinates.
+  navigate,
+
+  /// Show GPS data.
+  gps,
+
+  /// Set the accuracy of the GPS fix.
+  setRequestedAccuracy
+}
+
+/// The main page of the application.
 class HomePage extends StatefulWidget {
-  final Settings settings;
+  /// Create the home page.
+  const HomePage(this.settings);
 
-  HomePage(this.settings);
+  /// Application settings.
+  ///
+  /// This value will be passed to sub pages.
+  final Settings settings;
 
   @override
   HomePageState createState() => HomePageState();
 }
 
+/// State for [HomePage].
 class HomePageState extends State<HomePage> {
   StreamSubscription<Position>? _locationListener;
   Position? _position;
@@ -57,7 +76,7 @@ class HomePageState extends State<HomePage> {
             return ListTile(
               title: Text(poi.name),
               subtitle: Text(directions),
-              onTap: () => Navigator.push(
+              onTap: () => Navigator.push<PoiPage>(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) =>
@@ -83,22 +102,22 @@ class HomePageState extends State<HomePage> {
               value: MainMenuItems.gps,
             ),
             PopupMenuItem(
-              child: Text(
-                  'Change Requested Accuracy (${enumName(widget.settings.accuracy)})'),
+              child: Text('Change Requested Accuracy (' +
+                  '${enumName(widget.settings.accuracy)})'),
               value: MainMenuItems.setRequestedAccuracy,
             )
           ],
           onSelected: (MainMenuItems item) {
             switch (item) {
               case MainMenuItems.gps:
-                Navigator.push(
+                Navigator.push<GpsPage>(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
                             GpsPage(widget.settings)));
                 break;
               case MainMenuItems.savePosition:
-                Navigator.push(
+                Navigator.push<SavePositionPage>(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => SavePositionPage(
@@ -110,7 +129,7 @@ class HomePageState extends State<HomePage> {
                             true)));
                 break;
               case MainMenuItems.setRequestedAccuracy:
-                Navigator.push(
+                Navigator.push<SetRequestAccuracyPage>(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
@@ -121,7 +140,7 @@ class HomePageState extends State<HomePage> {
                             })));
                 break;
               case MainMenuItems.navigate:
-                Navigator.push(
+                Navigator.push<NavigatePage>(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
@@ -137,8 +156,10 @@ class HomePageState extends State<HomePage> {
               icon: Icon(Icons.share),
               onPressed: position == null
                   ? null
-                  : () => Share.share(
-                      'I am currently located within ${formatDistance(position.accuracy)} of ${position.latitude} ° latitude, ${position.longitude} ° longitude.'))
+                  : () => Share.share('I am currently located within ' +
+                      '${formatDistance(position.accuracy)} of ' +
+                      '${position.latitude} ° latitude, ' +
+                      '${position.longitude} ° longitude.'))
         ],
       ),
       body: child,
@@ -151,6 +172,7 @@ class HomePageState extends State<HomePage> {
     _locationListener?.cancel();
   }
 
+  /// Start listening for location changes.
   void trackLocation() {
     _locationListener = Geolocator.getPositionStream(
             desiredAccuracy: widget.settings.getAccuracy())

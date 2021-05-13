@@ -9,18 +9,31 @@ import '../json/settings.dart';
 import '../util.dart';
 import 'save_position.dart';
 
-enum PoiMenuItems { rename, delete }
+/// Items in the POI menu.
+enum PoiMenuItems {
+  /// Rename the POI.
+  rename,
 
+  /// Delete the POI.
+  delete
+}
+
+/// A page that shows a POI.
 class PoiPage extends StatefulWidget {
-  final Settings settings;
-  final PointOfInterest poi;
+  /// Create a page.
+  const PoiPage(this.settings, this.poi);
 
-  PoiPage(this.settings, this.poi);
+  /// Application settings.
+  final Settings settings;
+
+  /// The POI to show.
+  final PointOfInterest poi;
 
   @override
   PoiPageState createState() => PoiPageState();
 }
 
+/// State for [PoiPage].
 class PoiPageState extends State<PoiPage> {
   StreamSubscription<Position>? _locationListener;
   Position? _position;
@@ -110,7 +123,11 @@ class PoiPageState extends State<PoiPage> {
             tooltip: 'Share',
             icon: Icon(Icons.share),
             onPressed: () => Share.share(
-                "I've saved the coordinates for ${widget.poi.name}.\n\nLatitude: ${widget.poi.latitude} °\nLongitude: ${widget.poi.longitude} °\n\nThese coordinates are accurate to within ${formatDistance(widget.poi.accuracy)}.",
+                "I've saved the coordinates for ${widget.poi.name}.\n\n" +
+                    'Latitude: ${widget.poi.latitude} °\n' +
+                    'Longitude: ${widget.poi.longitude} °\n\n' +
+                    'These coordinates are accurate to within ' +
+                    '${formatDistance(widget.poi.accuracy)}.',
                 subject: 'Point of Interest')),
         widget.settings.pointsOfInterest.contains(widget.poi)
             ? PopupMenuButton<PoiMenuItems>(
@@ -129,7 +146,7 @@ class PoiPageState extends State<PoiPage> {
                 onSelected: (PoiMenuItems value) {
                   switch (value) {
                     case PoiMenuItems.rename:
-                      Navigator.push(
+                      Navigator.push<SavePositionPage>(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) =>
